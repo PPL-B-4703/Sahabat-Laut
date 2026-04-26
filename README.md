@@ -1,6 +1,3 @@
-Siap, ini versi **full raw** yang tinggal kamu blok terus **copy-paste** ke file `README.md`. Gak pakai basa-basi lagi:
-
-```markdown
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -21,12 +18,10 @@ Jalankan perintah ini secara berurutan di terminal:
 composer install
 npm install
 npm install -D tailwindcss@^4.0.0
-```
 
 > [!IMPORTANT]
 > Jika muncul file `tailwind.config.js` dan `postcss.config.js` setelah instalasi Tailwind di atas, segera **HAPUS** kedua file tersebut.
 
-### 2. Konfigurasi Storage
 Jika gambar/aset tidak terbaca, hubungkan folder storage dengan perintah:
 
 ```bash
