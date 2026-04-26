@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LaporanController; // Tambahkan import ini
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -20,6 +21,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:masyarakat')->prefix('masyarakat')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showMasyarakatDashboard'])->name('dashboard');
+        Route::get('/lapor', [LaporanController::class, 'create'])->name('laporan.create');
+        Route::post('/lapor', [LaporanController::class, 'store'])->name('laporan.store');
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
