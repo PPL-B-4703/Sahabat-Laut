@@ -7,69 +7,62 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white">
-    <!-- Header -->
-    <header class="fixed top-0 w-full z-50 bg-cover bg-center" style="background-image: url('{{ asset('images/backgrounds/Background-Landing.jpg') }}'); filter: brightness(0.8);">
-        <!-- Dark overlay untuk readability text -->
-        <div class="absolute inset-0 bg-black/20"></div>
-        
-        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
-            <div class="text-2xl font-bold text-white drop-shadow-lg">
-                🌊 Sahabat Laut
-            </div>
-            <div class="hidden md:flex gap-8">
-                <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md">Beranda</a>
-                <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md">Katalog</a>
-            </div>
-            <div class="flex items-center gap-4">
-                <button class="md:hidden text-white drop-shadow-md">☰</button>
-                <a href="/login" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-white/90 font-medium transition">
-                    Login
-                </a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="pt-20 min-h-screen flex items-center justify-center relative overflow-hidden">
-        <!-- Background Image -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/backgrounds/Background-Landing.jpg') }}');">
-        </div>
-        
-        <!-- Minimal Dark Overlay untuk readability text -->
+    <!-- Combined Header + Hero Section with Seamless Background -->
+    <div class="relative min-h-screen bg-cover bg-center bg-no-repeat overflow-hidden" style="background-image: url('{{ asset('images/backgrounds/Background-Landing.jpg') }}');">
+        <!-- Dark Overlay untuk readability text -->
         <div class="absolute inset-0 bg-black/25"></div>
 
-        <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
-            <!-- Left Content -->
-            <div class="space-y-6">
-                <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-lg">
-                    Lihat Laut dengan <span class="text-cyan-200">Jelas</span>
-                </h1>
-                <p class="text-lg text-white leading-relaxed drop-shadow-md">
-                    Jelajahi keindahan dan kekayaan laut Indonesia. Pelajari ekosistem laut, spesies laut, dan cara menjaganya bersama Sahabat Laut.
-                </p>
-                <div class="flex gap-4 pt-4">
-                    <a href="/login" class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-white/90 font-semibold transition">
-                        Mulai Sekarang
+        <!-- Header -->
+        <header class="relative z-20">
+            <nav class="w-full px-6 md:px-12 py-4 flex justify-between items-center">
+                <div class="text-2xl font-bold text-white drop-shadow-lg">
+                    Sahabat Laut
+                </div>
+                <div class="hidden md:flex gap-8">
+                    <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Beranda</a>
+                    <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Katalog</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="md:hidden text-white drop-shadow-md">☰</button>
+                    <a href="/login" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-white/90 font-medium transition">
+                        Login
                     </a>
-                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 font-semibold transition">
-                        Pelajari Lebih Lanjut
-                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section Content -->
+        <section class="relative z-10 flex flex-col justify-start pt-20" style="height: calc(100vh - 80px);">
+            <div class="w-full px-6 md:px-12 py-8">
+                <!-- Left Content -->
+                <div class="space-y-6 max-w-2xl">
+                    <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-2xl">
+                        Lihat Laut dengan <span class="text-cyan-200">Jelas</span>
+                    </h1>
+                    <p class="text-lg text-white leading-relaxed drop-shadow-lg">
+                        Jelajahi keindahan dan kekayaan laut Indonesia. Pelajari ekosistem laut, spesies laut, dan cara menjaganya bersama Sahabat Laut.
+                    </p>
+                    <div class="flex gap-4 pt-4">
+                        <a href="/login" class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-white/90 font-semibold transition">
+                            Mulai Sekarang
+                        </a>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 font-semibold transition">
+                            Pelajari Lebih Lanjut
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Side Empty (fokus ke background image) -->
-            <div></div>
-        </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2">
-            <div class="animate-bounce text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                </svg>
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10">
+                <div class="animate-bounce text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <!-- Features Section (Optional) -->
     <section class="py-20 bg-white">
