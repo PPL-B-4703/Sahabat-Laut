@@ -8,17 +8,20 @@
 </head>
 <body class="bg-white">
     <!-- Header -->
-    <header class="fixed top-0 w-full bg-gradient-to-r from-blue-500 via-blue-500 to-cyan-500 z-50">
-        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold text-white">
+    <header class="fixed top-0 w-full z-50 bg-cover bg-center" style="background-image: url('{{ asset('images/backgrounds/Background-Landing.jpg') }}'); filter: brightness(0.8);">
+        <!-- Dark overlay untuk readability text -->
+        <div class="absolute inset-0 bg-black/20"></div>
+        
+        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
+            <div class="text-2xl font-bold text-white drop-shadow-lg">
                 🌊 Sahabat Laut
             </div>
             <div class="hidden md:flex gap-8">
-                <a href="#" class="text-white hover:text-white/80 font-medium transition">Beranda</a>
-                <a href="#" class="text-white hover:text-white/80 font-medium transition">Katalog</a>
+                <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md">Beranda</a>
+                <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md">Katalog</a>
             </div>
             <div class="flex items-center gap-4">
-                <button class="md:hidden text-white">☰</button>
+                <button class="md:hidden text-white drop-shadow-md">☰</button>
                 <a href="/login" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-white/90 font-medium transition">
                     Login
                 </a>
@@ -28,24 +31,24 @@
 
     <!-- Hero Section -->
     <section class="pt-20 min-h-screen flex items-center justify-center relative overflow-hidden">
-        <!-- Background Image with Overlay -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://via.placeholder.com/1600x900?text=Penyu+di+Laut'); filter: brightness(0.6);">
+        <!-- Background Image -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/backgrounds/Background-Landing.jpg') }}');">
         </div>
         
-        <!-- Ocean Blue Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-blue-500/60 via-blue-500/70 to-cyan-500/60"></div>
+        <!-- Minimal Dark Overlay untuk readability text -->
+        <div class="absolute inset-0 bg-black/25"></div>
 
         <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
             <!-- Left Content -->
             <div class="space-y-6">
-                <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight">
-                    Lihat Laut dengan <span class="text-cyan-300">Jelas</span>
+                <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-lg">
+                    Lihat Laut dengan <span class="text-cyan-200">Jelas</span>
                 </h1>
-                <p class="text-lg text-gray-100 leading-relaxed">
+                <p class="text-lg text-white leading-relaxed drop-shadow-md">
                     Jelajahi keindahan dan kekayaan laut Indonesia. Pelajari ekosistem laut, spesies laut, dan cara menjaganya bersama Sahabat Laut.
                 </p>
                 <div class="flex gap-4 pt-4">
-                    <a href="/login" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold transition">
+                    <a href="/login" class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-white/90 font-semibold transition">
                         Mulai Sekarang
                     </a>
                     <button class="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 font-semibold transition">
