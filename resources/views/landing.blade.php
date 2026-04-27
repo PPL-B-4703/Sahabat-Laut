@@ -18,7 +18,7 @@
                 <div class="text-2xl font-bold text-white drop-shadow-lg">
                     Sahabat Laut
                 </div>
-                <div class="hidden md:flex gap-8">
+                <div class="hidden md:flex gap-16">
                     <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Beranda</a>
                     <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Katalog</a>
                 </div>
@@ -46,9 +46,6 @@
                         <a href="/login" class="bg-white text-blue-600 px-8 py-3 rounded-lg hover:bg-white/90 font-semibold transition">
                             Mulai Sekarang
                         </a>
-                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-white/10 font-semibold transition">
-                            Pelajari Lebih Lanjut
-                        </button>
                     </div>
                 </div>
             </div>

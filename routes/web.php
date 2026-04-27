@@ -1,10 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\LaporanController; // Tambahkan import ini
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\LaporanController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', [\App\Http\Controllers\LandingPageController::class, 'index'])->name('landing'); //landing page
+ // Tambahkan import ini
+
+Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing'); // landing page
+Route::redirect('/', '/beranda');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
