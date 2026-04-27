@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LaporanController; // Tambahkan import ini
 
+Route::get('/', [\App\Http\Controllers\LandingPageController::class, 'index'])->name('landing'); //landing page
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/signup', [AuthController::class, 'showRegister'])->name('register.view');
