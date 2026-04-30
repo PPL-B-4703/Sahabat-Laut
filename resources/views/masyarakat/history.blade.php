@@ -67,9 +67,7 @@
                     <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
                 </div>
                 <span class="font-semibold text-white text-sm glass-text">{{ $user->first_name }} {{ $user->last_name }}</span>
-                
             </div>
-            
         </header>
 
         <div class="flex items-start pt-[130px] px-10 pb-10 gap-10 min-h-screen">
@@ -140,10 +138,11 @@
                                                   }" x-text="laporan.status"></span>
                                         </td>
                                         <td class="px-6 py-5 text-center">
-                                            <button @click="showDetail(laporan)" 
-                                                    class="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-all shadow-md active:scale-95">
+                                            <!-- PERBAIKAN: Menggunakan rute dinamis Laravel di dalam Alpine.js -->
+                                            <a :href="'/masyarakat/lapor/' + laporan.id" 
+                                               class="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-all shadow-md active:scale-95 inline-block">
                                                 Detail
-                                            </button>
+                                            </a>
                                         </td>
                                     </tr>
                                 </template>
@@ -167,34 +166,5 @@
             </main>
         </div>
     </div>
-
-    <script>
-        function showDetail(data) {
-            Swal.fire({
-                title: `<span style="font-family: 'Poppins'; font-weight: 800; color: #1e3a8a;">DETAIL LAPORAN</span>`,
-                html: `
-                    <div style="text-align: left; font-family: 'Poppins'; font-size: 14px; line-height: 1.6;">
-                        <div style="background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
-                            <b style="color: #64748b; font-size: 10px; text-transform: uppercase;">Lokasi & Koordinat</b><br>
-                            <span style="color: #1e293b; font-weight: 600;">${data.alamat_lokasi}</span><br>
-                            <code style="color: #2563eb; font-size: 11px;">${data.latitude}, ${data.longitude}</code>
-                        </div>
-                        <div style="background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
-                            <b style="color: #64748b; font-size: 10px; text-transform: uppercase;">Spesies & Aktivitas</b><br>
-                            <span style="color: #1e293b;">${data.species} (${data.aktivitas})</span>
-                        </div>
-                        <div style="background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0;">
-                            <b style="color: #64748b; font-size: 10px; text-transform: uppercase;">Deskripsi Temuan</b><br>
-                            <i style="color: #475569;">"${data.deskripsi_temuan}"</i>
-                        </div>
-                    </div>
-                `,
-                confirmButtonText: 'Tutup',
-                confirmButtonColor: '#000000',
-                width: '500px',
-                borderRadius: '30px'
-            });
-        }
-    </script>
 </body>
 </html>
