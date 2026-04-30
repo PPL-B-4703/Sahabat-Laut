@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
@@ -17,25 +18,27 @@ class LaporanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'species_category' => 'required',
-            'aktivitas'        => 'required',
+            'species_category' => 'required|string',
+            'species_other'    => 'nullable|required_if:species_category,Lainnya|string|max:255',
+            'aktivitas'        => 'required|string',
             'tanggal_temuan'   => 'required|date',
-            'provinsi'         => 'required',
+            'provinsi'         => 'required|string',
             'alamat_detail'    => 'required|string',
-            'latitude'         => 'required',
-            'longitude'        => 'required',
+            'deskripsi_lokasi' => 'required|string',
+            'latitude'         => 'required|numeric',
+            'longitude'        => 'required|numeric',
             'deskripsi_temuan' => 'required|string',
-            'deskripsi_lokasi' => 'required|string', // Validasi deskripsi lokasi
-            'attachments.*'    => 'nullable|image|max:5120',
+            'attachments.*'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
-        $species = ($request->species_category === 'Lainnya') ? $request->species_other : $request->species_category;
+        $species = ($request->species_category === 'Lainnya') 
+                    ? $request->species_other 
+                    : $request->species_category;
         $alamatLengkap = "{$request->alamat_detail}, Provinsi {$request->provinsi}";
-
         $fileNames = [];
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $name = time() . '_' . $file->getClientOriginalName();
+                $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/laporan', $name);
                 $fileNames[] = $name;
             }
@@ -48,12 +51,21 @@ class LaporanController extends Controller
             'deskripsi_temuan' => $request->deskripsi_temuan,
             'aktivitas'        => $request->aktivitas,
             'alamat_lokasi'    => $alamatLengkap,
-            'deskripsi_lokasi' => $request->deskripsi_lokasi, 
+            'deskripsi_lokasi' => $request->deskripsi_lokasi,
             'latitude'         => $request->latitude,
             'longitude'        => $request->longitude,
             'attachments'      => $fileNames,
+            'status'           => 'Menunggu Verifikasi', 
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Laporan berhasil terkirim!');
+        return redirect()->route('laporan.history')->with('success', 'Laporan berhasil terkirim!');
+    }
+
+    public function index()
+    {
+        $user = Auth::user();
+        $laporans = Laporan::where('user_id', $user->id)->latest()->get();
+
+        return view('masyarakat.history', compact('user', 'laporans'));
     }
 }
