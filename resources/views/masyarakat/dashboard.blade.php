@@ -36,13 +36,14 @@
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="overflow-x-hidden min-h-screen">
 
     <div class="relative w-full min-h-screen">
         
-        <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-50 bg-transparent border-b border-white/10">
+        <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
                 <img src="{{ asset('storage/images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
@@ -61,8 +62,8 @@
 
             <div class="flex items-center gap-8">
                 <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20 backdrop-blur-sm">
-                    <div class="w-10 h-10 rounded-full border-2 border-[#925fe2] bg-white overflow-hidden shadow-lg">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name) }}&background=random" alt="Profile">
+                    <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden shadow-lg">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
                     </div>
                     <span class="font-semibold text-white text-sm glass-text">
                         {{ $user->first_name }} {{ $user->last_name }}
@@ -78,46 +79,38 @@
             </div>
         </header>
 
-        <div class="flex pt-[130px] px-10 pb-10 gap-10 min-h-screen">
+        <div class="flex items-start pt-[130px] px-10 pb-10 gap-10 min-h-screen">
             
-            <aside class="w-72 h-[700px] sticky top-[130px] rounded-[32px] overflow-hidden backdrop-blur-xl bg-black/20 shadow-2xl border border-white/20 p-8 flex flex-col justify-between transition-all">
+            <aside class="w-72 h-fit sticky top-[120px] rounded-[32px] overflow-hidden backdrop-blur-xl bg-black/20 border border-white/20 p-8 flex flex-col z-20 text-white shadow-2xl">
                 <nav class="flex flex-col gap-10">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-4 {{ request()->routeIs('dashboard') ? 'text-white font-bold' : 'text-white/60' }} group">
-                        <div class="p-2 {{ request()->routeIs('dashboard') ? 'bg-white/30' : 'bg-white/10' }} rounded-lg group-hover:bg-white/50 transition-all shadow-md">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                            </svg>
-                        </div>
-                        <span class="glass-text">Home Page</span>
-                    </a>
-                    
-                    <a href="{{ route('laporan.create') }}" class="flex items-center gap-4 {{ request()->routeIs('laporan.create') ? 'text-white font-bold' : 'text-white/60' }} hover:text-white transition-all group font-medium">
-                        <div class="p-2 {{ request()->routeIs('laporan.create') ? 'bg-white/30' : 'bg-transparent' }} rounded-lg group-hover:bg-white/40 transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                            </svg>
-                        </div>
-                        <span class="{{ request()->routeIs('laporan.create') ? 'glass-text' : 'group-hover:glass-text' }}">Kirim Laporan</span>
+                    <a href="#" class="flex items-center gap-4 text-white font-bold transition-all underline underline-offset-8 decoration-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span>Home Page</span>
                     </a>
 
-                    <a href="#" class="flex items-center gap-4 text-white/60 hover:text-white transition-all group font-medium">
-                        <div class="p-2 bg-transparent rounded-lg group-hover:bg-white/40 transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                            </svg>
-                        </div>
-                        <span class="group-hover:glass-text">History Laporan</span>
+                    <a href="{{ route('laporan.create') }}" class="flex items-center gap-4 {{ request()->routeIs('laporan.create') ? 'text-white font-bold' : 'text-white/60 hover:text-white' }} transition-all group">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                        </svg>
+                        <span>Kirim Laporan</span>
+                    </a>
+
+                    <a href="{{ route('laporan.history') }}" class="flex items-center gap-4 {{ request()->routeIs('laporan.history') ? 'text-white font-bold underline underline-offset-8 decoration-2' : 'text-white/60 hover:text-white' }} transition-all group">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        <span class="{{ request()->routeIs('laporan.history') ? 'glass-text' : '' }}">History Laporan</span>
                     </a>
                 </nav>
 
-                <form action="{{ route('logout') }}" method="POST" class="pt-6 border-t border-white/10">
+                <form action="{{ route('logout') }}" method="POST" class="mt-12 pt-6 border-t border-white/10">
                     @csrf
-                    <button type="submit" class="flex items-center gap-4 text-white/60 hover:text-red-400 w-full transition-all group font-medium">
-                        <div class="p-2 bg-transparent rounded-lg group-hover:bg-red-400/20 transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                        </div>
+                    <button type="submit" class="flex items-center gap-4 text-white/60 hover:text-red-400 w-full transition-all group">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
                         <span>Logout</span>
                     </button>
                 </form>
