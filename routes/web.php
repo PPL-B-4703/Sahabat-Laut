@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/lapor', [LaporanController::class, 'create'])->name('laporan.create');
         Route::post('/lapor', [LaporanController::class, 'store'])->name('laporan.store');
         Route::get('/riwayat', [LaporanController::class, 'index'])->name('laporan.history');
+        Route::get('/lapor/{id}', [LaporanController::class, 'show'])->name('laporan.show');
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

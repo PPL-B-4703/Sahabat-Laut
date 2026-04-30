@@ -18,8 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/v1/masyarakat/profile', [ApiAuthController::class, 'profile']);
         Route::post('/v1/masyarakat/laporan', [ApiLaporanController::class, 'store']); 
         Route::get('/v1/masyarakat/laporan/history', [ApiLaporanController::class, 'index']); 
+        Route::get('/v1/masyarakat/laporan/{id}', [ApiLaporanController::class, 'show']); 
     });
-
 
     Route::middleware('role:pakar')->group(function () {
         Route::get('/v1/pakar/consultations', function() {

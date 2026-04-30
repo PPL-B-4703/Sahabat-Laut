@@ -37,12 +37,14 @@ class LaporanController extends Controller
         $alamatLengkap = "{$request->alamat_detail}, Provinsi {$request->provinsi}";
         $fileNames = [];
         if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/laporan', $name);
-                $fileNames[] = $name;
-            }
+        foreach ($request->file('attachments') as $file) {
+            $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            $file->storeAs('laporan', $name, 'public'); 
+            
+            $fileNames[] = $name;
         }
+    }
 
         Laporan::create([
             'user_id'          => Auth::id(),
@@ -67,5 +69,16 @@ class LaporanController extends Controller
         $laporans = Laporan::where('user_id', $user->id)->latest()->get();
 
         return view('masyarakat.history', compact('user', 'laporans'));
+    }
+    public function show(int $id)
+    {
+        $user = Auth::user();
+        $laporan = Laporan::findOrFail($id);
+
+        if ($laporan->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke laporan ini.');
+        }
+
+        return view('masyarakat.detail_laporan', compact('user', 'laporan'));
     }
 }

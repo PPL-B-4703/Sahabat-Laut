@@ -35,7 +35,7 @@ class LaporanController extends Controller
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/laporan', $name);
+                $file->storeAs('laporan', $name, 'public');
                 $fileNames[] = $name;
             }
         }
@@ -53,6 +53,7 @@ class LaporanController extends Controller
             'attachments'       => $fileNames,
             'status'            => 'Menunggu Verifikasi',
         ]);
+
         $laporan->attachments = collect($laporan->attachments)->map(function ($file) {
             return asset('storage/laporan/' . $file);
         });
@@ -76,6 +77,27 @@ class LaporanController extends Controller
         return response()->json([
             'status' => 'success',
             'data'   => $laporans
+        ]);
+    }
+
+    public function show(Request $request,int  $id)
+    {
+        $laporan = Laporan::where('user_id', $request->user()->id)->find($id);
+
+        if (!$laporan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
+            ], 404);
+        }
+
+        $laporan->attachments = collect($laporan->attachments)->map(function ($file) {
+            return asset('storage/laporan/' . $file);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $laporan
         ]);
     }
 }
