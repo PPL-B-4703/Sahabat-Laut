@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PakarController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LaporanController;
@@ -28,4 +29,12 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::prefix('pakar')->group(function () {
+    Route::get('/dashboard', [PakarController::class, 'index'])->name('pakar.dashboard');
+    Route::get('/validasi', [PakarController::class, 'validasi'])->name('pakar.validasi');
+    
+    Route::get('/validasi/{id}', [PakarController::class, 'show'])->name('pakar.detail');
+    Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
 });
