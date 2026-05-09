@@ -123,12 +123,6 @@
 
 </section>
 
-<!-- FOOTER -->
-<footer class="border-t border-white/5 bg-[#050e1b] py-10 text-center">
-
-    <p class="text-white/20 text-xs tracking-[0.25em] uppercase">
-        © 2026 Sahabat Laut · Data KKP RI
-    </p>
 
 <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
