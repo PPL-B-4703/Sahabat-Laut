@@ -130,7 +130,12 @@
         © 2026 Sahabat Laut · Data KKP RI
     </p>
 
-</footer>
-
+<!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="mb-2">&copy; 2024 Sahabat Laut. Semua hak dilindungi.</p>
+            <p class="text-gray-400">Mari bersama menjaga kelestarian laut Indonesia</p>
+        </div>
+    </footer>
 </body>
 </html>
