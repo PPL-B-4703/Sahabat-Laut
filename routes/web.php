@@ -20,6 +20,7 @@ Route::get('/signup', [AuthController::class, 'showRegister'])->name('register.v
 Route::post('/signup', [AuthController::class, 'register'])->name('register');
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
 Route::get('/katalog/{biota}', [KatalogController::class, 'show'])->name('katalog.show');
+Route::view('/regulasi', 'regulasi')->name('regulasi');
 
 Route::middleware(['auth'])->group(function () {
 
