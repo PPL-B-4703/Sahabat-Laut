@@ -22,6 +22,7 @@ npm install -D tailwindcss@^4.0.0
 > [!IMPORTANT]
 > Jika muncul file `tailwind.config.js` dan `postcss.config.js` setelah instalasi Tailwind di atas, segera **HAPUS** kedua file tersebut.
 
+### 2. Konfigurasi Storage
 Jika gambar/aset tidak terbaca, hubungkan folder storage dengan perintah:
 
 ```bash
