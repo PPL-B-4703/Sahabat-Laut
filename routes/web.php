@@ -8,6 +8,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
+use App\Http\Controllers\FAQController;
 
  // Tambahkan import ini
 
@@ -21,6 +22,7 @@ Route::post('/signup', [AuthController::class, 'register'])->name('register');
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
 Route::get('/katalog/{biota}', [KatalogController::class, 'show'])->name('katalog.show');
 Route::view('/regulasi', 'regulasi')->name('regulasi');
+Route::get('/faq', [FAQController::class, 'index'])->name('faq.index');
 
 Route::middleware(['auth'])->group(function () {
 

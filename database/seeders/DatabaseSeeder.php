@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         // Panggil UserSeeder agar Admin dan Pakar otomatis terbuat
         $this->call([
             UserSeeder::class,
+            FaqSeeder::class,
         ]);
     }
 }
