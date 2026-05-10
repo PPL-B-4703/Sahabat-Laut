@@ -102,7 +102,7 @@ class AuthController extends Controller
         return view('masyarakat.dashboard', ['user' => Auth::user()]);
     }
 
-    protected function redirectBasedOnRole($role)
+    protected function redirectBasedOnRole(string $role)
     {
         return match($role) {
             'admin'      => redirect()->route('admin.dashboard'),
