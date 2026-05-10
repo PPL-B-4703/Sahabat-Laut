@@ -75,9 +75,26 @@ class AuthController extends Controller
         return view('admin.dashboard', ['user' => Auth::user()]); 
     }
 
-    public function showPakarDashboard() 
-    { 
-        return view('pakar.dashboard', ['user' => Auth::user()]); 
+    public function showPakarDashboard()
+    {
+        $totalLaporan = \App\Models\Report::count();
+        $laporanMenunggu = \App\Models\Report::where('status', 'Menunggu Verifikasi')->count();
+        $laporanDiproses = \App\Models\Report::where('status', 'Sudah Diproses')->count();
+        $recentReports = \App\Models\Report::latest()->take(5)->get();
+
+        $chartData = \App\Models\Report::select('lokasi', \DB::raw('count(*) as total'))
+                    ->groupBy('lokasi')
+                    ->get();
+
+        return view('pakar.dashboard', [
+            'user' => \Illuminate\Support\Facades\Auth::user(),
+            'totalLaporan' => $totalLaporan,
+            'laporanMenunggu' => $laporanMenunggu,
+            'laporanDiproses' => $laporanDiproses,
+            'recentReports' => $recentReports,
+            'chartLabels' => $chartData->pluck('lokasi'),
+            'chartValues' => $chartData->pluck('total'),
+        ]);
     }
 
     public function showMasyarakatDashboard() 
