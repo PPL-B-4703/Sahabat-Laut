@@ -30,6 +30,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:pakar')->prefix('pakar')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showPakarDashboard'])->name('pakar.dashboard');
+        Route::get('/validasi', [PakarController::class, 'index'])->name('pakar.validasi');
+        Route::get('/validasi/{id}', [PakarController::class, 'show'])->name('pakar.validasi.show');
+        Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
+        Route::get('/profile', [PakarController::class, 'editProfile'])->name('pakar.profile');
+        Route::patch('/validasi/{id}', [PakarController::class, 'updateStatus'])->name('pakar.validasi.update');
     });
 
     Route::middleware('role:masyarakat')->prefix('masyarakat')->group(function () {
@@ -45,11 +50,4 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
-
-Route::prefix('pakar')->group(function () {
-    Route::get('/dashboard', [PakarController::class, 'dashboard'])->name('pakar.dashboard');
-    Route::get('/validasi', [PakarController::class, 'index'])->name('pakar.validasi');
-    Route::get('/validasi/{id}', [PakarController::class, 'show'])->name('pakar.detail');
-    Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
 });

@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Validasi - {{ $data['nama'] }}</title>
+    <title>Detail Validasi - {{ $report->nama }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #0F172A; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex text-white overflow-x-hidden">
+<body class="bg-[#0F172A] text-white overflow-x-hidden" x-data="{ notificationsOpen: false, selectAll: false }">
 
     <aside class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-30">
         <div class="p-6">
@@ -34,12 +37,15 @@
         </nav>
 
         <div class="p-4 border-t border-slate-800">
-            <button class="w-full flex items-center px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition font-medium">
-                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                </svg>
-                Logout
-            </button>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full flex items-center px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition font-medium">
+                    <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                    </svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -50,7 +56,39 @@
                 <span>&gt;</span>
                 <span class="text-slate-300">Detail Laporan</span>
             </nav>
-            <h2 class="text-3xl font-bold">Detail Laporan</h2>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold text-white">Detail Laporan</h1>
+
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('pakar.profile') }}" class="flex items-center gap-3 bg-slate-800/40 p-1.5 pr-5 rounded-full border border-slate-700 hover:bg-slate-700/60 transition-all group">
+                        <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
+                            P
+                        </div>
+                        <p class="text-white font-bold text-sm">Pakar Kelautan</p>
+                    </a>
+                    
+                    <div class="relative">
+                        <button @click="notificationsOpen = !notificationsOpen" 
+                                class="w-12 h-12 bg-[#131C31] border border-slate-700/40 rounded-2xl flex items-center justify-center text-blue-500 relative transition-all active:scale-95">
+                            <i class="ph-bold ph-bell text-2xl"></i>
+                            <span class="absolute top-3 right-3.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#131C31]"></span>
+                        </button>
+
+                        <div x-show="notificationsOpen" 
+                            x-cloak
+                            @click.away="notificationsOpen = false" 
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            class="absolute right-0 mt-4 w-72 bg-[#131C31] border border-slate-700/60 rounded-3xl shadow-2xl z-50 overflow-hidden text-left">
+                            <div class="p-5 border-b border-slate-800/60 font-bold text-xs uppercase tracking-widest text-slate-500">Notifikasi</div>
+                            <div class="p-8 text-center text-slate-500 italic text-xs">
+                                Belum ada notifikasi baru
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -59,73 +97,113 @@
                 
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <p class="text-lg font-bold text-white">{{ $data['nama'] }}</p>
+                        <p class="text-lg font-bold text-white">{{ $report->nama }}</p>
                         <div class="mt-2 flex items-center gap-2">
                             <span class="text-[9px] font-bold uppercase px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-lg">
-                                {{ $data['status'] }}
+                                {{ $report->status }}
                             </span>
                         </div>
                     </div>
-                    <p class="text-xs font-bold text-slate-500 uppercase">TANGGAL: {{ $data['tgl'] }}</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase">TANGGAL: {{ $report->tgl }}</p>
                 </div>
 
                 <div class="relative group mb-8">
-                    <img src="{{ $data['img'] }}" class="w-full h-72 object-cover rounded-[24px] border border-slate-600 shadow-xl">
+                    <img src="{{ $report->image_path ? asset('storage/' . $report->image_path) : 'https://placehold.jp/24/131c31/ffffff/600x400.png?text=FOTO+' . urlencode($report->spesies) }}" 
+                        alt="Foto Biota" 
+                        class="w-full h-80 object-cover rounded-[32px] border border-slate-700/50 shadow-2xl">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px] flex items-center justify-center">
+                        <p class="text-sm font-bold text-white">Klik untuk memperbesar</p>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 gap-6">
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Spesies</label>
-                        <p class="text-slate-200 font-semibold italic">{{ $data['spesies'] }}</p>
+                        <p class="text-slate-200 font-semibold italic">{{ $report->spesies }}</p>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Aktivitas</label>
-                        <p class="text-slate-200 font-semibold italic">{{ $data['aktivitas'] }}</p>
+                        <p class="text-slate-200 font-semibold italic">{{ $report->aktivitas }}</p>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Deskripsi Temuan</label>
                         <p class="text-sm text-slate-400 leading-relaxed">
-                            Laporan penemuan biota laut jenis {{ $data['spesies'] }} di area {{ $data['lokasi'] }}. Mohon dilakukan verifikasi lebih lanjut oleh tim pakar terkait.
+                            Laporan penemuan biota laut jenis {{ $report->spesies }} di area {{ $report->lokasi }}. Mohon dilakukan verifikasi lebih lanjut oleh tim pakar terkait.
                         </p>
                     </div>
                     <div class="grid grid-cols-2 gap-4 border-t border-slate-700/50 pt-6">
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Provinsi</label>
-                            <p class="text-slate-200 font-semibold italic">{{ $data['prov'] }}</p>
+                            <p class="text-slate-200 font-semibold italic">{{ $report->prov }}</p>
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Lokasi</label>
-                            <p class="text-slate-200 font-semibold italic">{{ $data['lokasi'] }}</p>
+                            <p class="text-slate-200 font-semibold italic">{{ $report->lokasi }}</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             <section class="bg-slate-800/40 p-8 rounded-[32px] border border-slate-700 shadow-2xl backdrop-blur-sm sticky top-8">
-                <h3 class="text-xl font-bold mb-8">Formulir Validasi & Koreksi Pakar</h3>
+                <h3 class="text-xl font-bold mb-6">Formulir Validasi & Koreksi Pakar</h3>
                 
-                <div class="mb-8">
-                    <p class="text-lg font-bold text-white mb-6 underline underline-offset-8 decoration-blue-500">Dr. Alif</p>
-                    <label class="block text-sm font-bold text-slate-300 mb-3">Status <span class="text-red-500">*</span></label>
-                    <select class="w-full bg-slate-900/50 border border-slate-600 rounded-2xl px-5 py-4 text-slate-300 focus:border-blue-500 outline-none">
-                        <option value="">Pilih Status Validasi</option>
-                        <option value="terverifikasi">Terverifikasi</option>
-                        <option value="ditolak">Ditolak</option>
-                        <option value="menunggu">Menunggu Verifikasi</option>
-                        <option value="sudah_diproses">Sudah Diproses</option>
-                    </select>
-                </div>
+                @if($report->status == 'Menunggu Verifikasi')
+                    <form action="{{ route('pakar.validasi.update', $report->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
 
-                <div class="mb-8">
-                    <label class="block text-sm font-bold text-slate-300 mb-3">Catatan Justifikasi <span class="text-red-500">*</span></label>
-                    <textarea class="w-full h-56 bg-slate-900/50 border border-slate-600 rounded-2xl px-5 py-4 text-slate-300 focus:border-blue-500 outline-none resize-none"></textarea>
-                    <p class="text-right text-[10px] font-bold text-slate-600 mt-3 tracking-widest">0/1000</p>
-                </div>
+                        <div class="mb-6" x-data="{ open: false, selected: 'Terverifikasi' }">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Status <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <button type="button" @click="open = !open" 
+                                        class="w-full bg-[#131C31] border border-slate-700/60 p-4 rounded-2xl flex justify-between items-center text-sm font-semibold">
+                                    <span x-text="selected"></span>
+                                    <i class="ph-bold ph-caret-down transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                                </button>
+                                <div x-show="open" @click.away="open = false" x-cloak class="absolute w-full mt-2 bg-[#131C31] border border-slate-700 shadow-xl rounded-2xl z-50 overflow-hidden">
+                                    <div @click="selected = 'Terverifikasi'; open = false" class="p-4 hover:bg-blue-600/20 cursor-pointer">Terverifikasi</div>
+                                    <div @click="selected = 'Ditolak'; open = false" class="p-4 hover:bg-red-600/20 cursor-pointer">Ditolak</div>
+                                </div>
+                                <input type="hidden" name="status" :value="selected">
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <a href="{{ route('pakar.validasi') }}" class="py-4 bg-slate-700/50 hover:bg-slate-700 text-center text-white font-bold rounded-2xl transition-all">Batal</a>
-                    <button class="py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-900/30 transition-all">Simpan Validasi</button>
-                </div>
+                        <div class="mb-6">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Koreksi & Tindak Lanjut</label>
+                            <textarea name="koreksi" rows="6" class="w-full bg-[#131C31] border border-slate-700/60 p-5 rounded-3xl text-sm text-slate-300 focus:border-blue-500 outline-none transition-all"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-sm hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all">
+                            SIMPAN VALIDASI FINAL
+                        </button>
+                    </form>
+                @else
+                    <div class="space-y-6">
+                        <div class="p-4 rounded-2xl border {{ $report->status == 'Terverifikasi' ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5' }}">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Status Akhir</label>
+                            <p class="font-bold {{ $report->status == 'Terverifikasi' ? 'text-green-500' : 'text-red-500' }}">
+                                {{ strtoupper($report->status) }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Catatan Pakar</label>
+                            <div class="bg-[#131C31] p-5 rounded-3xl border border-slate-700/60 text-sm text-slate-400 italic">
+                                "{{ $report->koreksi ?? 'Tidak ada catatan tambahan.' }}"
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+                            <p class="text-[10px] text-slate-500 leading-relaxed font-medium">
+                                <i class="ph-bold ph-info mr-1"></i> Laporan ini sudah bersifat final. Status tidak dapat diubah kembali kecuali masyarakat membuat laporan baru.
+                            </p>
+                        </div>
+                        
+                        <a href="{{ route('pakar.validasi') }}" class="block w-full bg-slate-700 py-4 rounded-2xl font-bold text-sm text-center hover:bg-slate-600 transition">
+                            KEMBALI KE DAFTAR
+                        </a>
+                    </div>
+                @endif
             </section>
         </div>
     </main>
