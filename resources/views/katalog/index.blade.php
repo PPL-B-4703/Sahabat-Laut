@@ -71,6 +71,11 @@
             Regulasi
         </a>
 
+        <a href="{{ route('faq.index') }}"
+            class="text-white/70 hover:text-white transition">
+            Pusat Bantuan
+        </a>
+        
     </div>
 
 </nav>
