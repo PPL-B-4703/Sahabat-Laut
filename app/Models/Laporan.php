@@ -15,4 +15,9 @@ class Laporan extends Model
         'attachments' => 'array', 
         'tanggal_temuan' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

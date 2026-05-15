@@ -3,9 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
- // Tambahkan import ini
+// Tambahkan import ini
 
 Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing'); // landing page
 Route::redirect('/', '/beranda');
@@ -19,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showAdminDashboard'])->name('admin.dashboard');
+        Route::resource('users', UserController::class, ['as' => 'admin']);
     });
 
     Route::middleware('role:pakar')->prefix('pakar')->group(function () {
