@@ -34,7 +34,7 @@
         $alamatArray = explode(', Provinsi ', $laporan->alamat_lokasi);
         $namaLokasi = $alamatArray[0] ?? $laporan->alamat_lokasi;
         $namaProvinsi = $alamatArray[1] ?? '-';
-        $photos = $laporan->attachments ?? [];
+        $photos = is_string($laporan->attachments) ? json_decode($laporan->attachments, true) : ($laporan->attachments ?? []);
     @endphp
 
     <div class="relative w-full min-h-screen">
