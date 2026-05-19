@@ -9,8 +9,6 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
 
- // Tambahkan import ini
-
 Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing'); 
 Route::redirect('/', '/beranda');
 

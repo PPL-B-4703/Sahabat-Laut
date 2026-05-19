@@ -61,10 +61,12 @@
 
                 <div class="flex items-center gap-3">
                     <a href="{{ route('pakar.profile') }}" class="flex items-center gap-3 bg-slate-800/40 p-1.5 pr-5 rounded-full border border-slate-700 hover:bg-slate-700/60 transition-all group">
-                        <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform">
-                            P
+                        <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/20 group-hover:scale-105 transition-transform uppercase">
+                            {{ substr(auth()->user()->first_name, 0, 1) }}
                         </div>
-                        <p class="text-white font-bold text-sm">Pakar Kelautan</p>
+                        <p class="text-white font-bold text-sm">
+                            {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                        </p>
                     </a>
                     
                     <div class="relative">
@@ -91,26 +93,43 @@
             </div>
         </header>
 
+        @php
+            $alamatArray = explode(', Provinsi ', $report->alamat_lokasi);
+            $lokasi = $alamatArray[0] ?? $report->alamat_lokasi;
+            $provinsi = $alamatArray[1] ?? '-';
+        @endphp
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             <section class="bg-slate-800/40 p-8 rounded-[32px] border border-slate-700 shadow-2xl backdrop-blur-sm">
                 <h3 class="text-xl font-bold mb-8">Informasi Laporan User</h3>
                 
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <p class="text-lg font-bold text-white">{{ $report->nama }}</p>
+                        <p class="text-lg font-bold text-white">{{ $report->user->first_name ?? 'Anonim' }} {{ $report->user->last_name ?? '' }}</p>
                         <div class="mt-2 flex items-center gap-2">
                             <span class="text-[9px] font-bold uppercase px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-lg">
                                 {{ $report->status }}
                             </span>
                         </div>
                     </div>
-                    <p class="text-xs font-bold text-slate-500 uppercase">TANGGAL: {{ $report->tgl }}</p>
+                    <p class="text-xs font-bold text-slate-500 uppercase">TANGGAL: {{ $report->tanggal_temuan }}</p>
                 </div>
 
                 <div class="relative group mb-8">
-                    <img src="{{ $report->image_path ? asset('storage/' . $report->image_path) : 'https://placehold.jp/24/131c31/ffffff/600x400.png?text=FOTO+' . urlencode($report->spesies) }}" 
-                        alt="Foto Biota" 
-                        class="w-full h-80 object-cover rounded-[32px] border border-slate-700/50 shadow-2xl">
+                    @php
+                        $fotos = is_string($report->attachments) ? json_decode($report->attachments, true) : $report->attachments;
+                    @endphp
+
+                    @if(!empty($fotos) && is_array($fotos) && count($fotos) > 0)
+                        <img src="{{ asset('storage/laporan/' . $fotos[0]) }}" 
+                            alt="Foto Biota" 
+                            class="w-full h-80 object-cover rounded-[32px] border border-slate-700/50 shadow-2xl">
+                    @else
+                        <img src="https://placehold.jp/24/131c31/ffffff/600x400.png?text=FOTO+{{ urlencode($report->species ?? 'BIOTA') }}" 
+                            alt="Foto Biota" 
+                            class="w-full h-80 object-cover rounded-[32px] border border-slate-700/50 shadow-2xl">
+                    @endif
+                    
                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px] flex items-center justify-center">
                         <p class="text-sm font-bold text-white">Klik untuk memperbesar</p>
                     </div>
@@ -119,7 +138,7 @@
                 <div class="grid grid-cols-1 gap-6">
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Spesies</label>
-                        <p class="text-slate-200 font-semibold italic">{{ $report->spesies }}</p>
+                        <p class="text-slate-200 font-semibold italic">{{ $report->species }}</p>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Aktivitas</label>
@@ -128,17 +147,17 @@
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Deskripsi Temuan</label>
                         <p class="text-sm text-slate-400 leading-relaxed">
-                            Laporan penemuan biota laut jenis {{ $report->spesies }} di area {{ $report->lokasi }}. Mohon dilakukan verifikasi lebih lanjut oleh tim pakar terkait.
+                            {{ $report->deskripsi_temuan }}
                         </p>
                     </div>
                     <div class="grid grid-cols-2 gap-4 border-t border-slate-700/50 pt-6">
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Provinsi</label>
-                            <p class="text-slate-200 font-semibold italic">{{ $report->prov }}</p>
+                            <p class="text-slate-200 font-semibold italic">{{ $provinsi }}</p>
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Lokasi</label>
-                            <p class="text-slate-200 font-semibold italic">{{ $report->lokasi }}</p>
+                            <p class="text-slate-200 font-semibold italic">{{ $lokasi }}</p>
                         </div>
                     </div>
                 </div>
@@ -151,6 +170,11 @@
                     <form action="{{ route('pakar.validasi.update', $report->id) }}" method="POST">
                         @csrf
                         @method('PATCH')
+
+                        <div class="mb-6 border-b border-slate-700/50 pb-4">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Pakar Validasi</label>
+                            <p class="text-slate-200 font-bold text-base">{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</p>
+                        </div>
 
                         <div class="mb-6" x-data="{ open: false, selected: 'Terverifikasi' }">
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Status <span class="text-red-500">*</span></label>
@@ -170,15 +194,34 @@
 
                         <div class="mb-6">
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Koreksi & Tindak Lanjut</label>
-                            <textarea name="koreksi" rows="6" class="w-full bg-[#131C31] border border-slate-700/60 p-5 rounded-3xl text-sm text-slate-300 focus:border-blue-500 outline-none transition-all"></textarea>
+                            <textarea name="koreksi" rows="6" class="w-full bg-[#131C31] border border-slate-700/60 p-5 rounded-3xl text-sm text-slate-300 focus:border-blue-500 outline-none transition-all" placeholder="Tuliskan alasan ilmiah atau koreksi..."></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-sm hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all">
-                            SIMPAN VALIDASI FINAL
-                        </button>
+                        <div class="mb-8 flex items-start gap-3">
+                            <input type="checkbox" id="pernyataan" required class="mt-0.5 w-4 h-4 rounded bg-[#131C31] border-slate-700/60 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <label for="pernyataan" class="text-[11px] text-slate-400 leading-relaxed cursor-pointer select-none">
+                                Saya menyatakan bahwa validasi ini dilakukan berdasarkan keilmuan yang dapat dipertanggungjawabkan
+                            </label>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <button type="button" onclick="window.history.back()" class="w-1/3 bg-slate-700 py-4 rounded-2xl font-bold text-sm hover:bg-slate-600 shadow-lg transition-all text-white">
+                                BATAL
+                            </button>
+                            <button type="submit" class="w-2/3 bg-blue-600 py-4 rounded-2xl font-bold text-sm hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all text-white">
+                                SIMPAN VALIDASI
+                            </button>
+                        </div>
                     </form>
                 @else
                     <div class="space-y-6">
+                        <div class="border-b border-slate-700/50 pb-4">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Divalidasi Oleh</label>
+                            <p class="text-slate-200 font-bold text-base">
+                                {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                            </p>
+                        </div>
+                        
                         <div class="p-4 rounded-2xl border {{ $report->status == 'Terverifikasi' ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5' }}">
                             <label class="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Status Akhir</label>
                             <p class="font-bold {{ $report->status == 'Terverifikasi' ? 'text-green-500' : 'text-red-500' }}">

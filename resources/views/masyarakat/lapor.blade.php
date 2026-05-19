@@ -157,7 +157,7 @@
                                             </li>
                                         </template>
                                     </ul>
-                                    <input type="hidden" name="provinsi" :value="selectedProv" required>
+                                    <input type="hidden" name="provinsi" :value="searchProv || selectedProv" required>
                                 </div>
 
                                 <div>
@@ -169,8 +169,8 @@
                                     <textarea name="deskripsi_lokasi" class="input-field h-24 resize-none" placeholder="Titik kenal atau patokan..." required></textarea>
                                 </div>
 
-                                <input type="hidden" name="latitude" x-model="lat">
-                                <input type="hidden" name="longitude" x-model="lng">
+                                <input type="hidden" name="latitude" :value="lat">
+                                <input type="hidden" name="longitude" :value="lng">
                                 <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 font-mono">
                                     Koordinat: <span x-text="lat"></span>, <span x-text="lng"></span>
                                 </div>

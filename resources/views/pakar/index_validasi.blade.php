@@ -97,31 +97,45 @@
         <div class="table-card shadow-2xl mr-6">
             <div class="w-full overflow-x-auto no-scrollbar">
                 <table class="w-full text-left table-auto">
-                    <thead>
-                        <tr class="text-[11px] uppercase tracking-[0.2em] text-slate-500 border-b border-slate-800/50">
-                            <th class="pl-10 py-8 w-12">
-                                <input type="checkbox" x-model="selectAll" class="rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0">
+                    <thead class="text-xs text-gray-400 uppercase bg-[#0B1221] border-b border-gray-700">
+                        <tr>
+                            <th scope="col" class="p-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-600 focus:ring-2">
+                                </div>
                             </th>
-                            <th class="px-3 py-8 font-extrabold">Nama</th>
-                            <th class="px-3 py-8 font-extrabold">Tanggal Lapor</th>
-                            <th class="px-3 py-8 font-extrabold">Spesies</th>
-                            <th class="px-3 py-8 font-extrabold">Provinsi</th>
-                            <th class="px-3 py-8 font-extrabold">Lokasi</th>
-                            <th class="px-3 py-8 font-extrabold text-center">Status</th>
-                            <th class="pr-10 py-8 font-extrabold text-right">Aksi</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">NAMA</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">TANGGAL LAPOR</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">SPESIES</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">PROVINSI</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">LOKASI</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-center">AKTIVITAS</th> <th scope="col" class="px-6 py-4 font-semibold text-center">STATUS</th>
+                            <th scope="col" class="px-6 py-4 font-semibold text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="text-[13px] font-bold">
                         @foreach($reports as $report)
+                        @php
+                            $alamatArray = explode(', Provinsi ', $report->alamat_lokasi);
+                            $lokasi = $alamatArray[0] ?? $report->alamat_lokasi;
+                            $provinsi = $alamatArray[1] ?? '-';
+                        @endphp
                         <tr class="border-b border-slate-800/30 hover:bg-slate-800/20 transition-all">
                             <td class="pl-10 py-6">
                                 <input type="checkbox" :checked="selectAll" class="rounded bg-slate-900 border-slate-700">
                             </td>
-                            <td class="px-3 py-6 text-white whitespace-nowrap">{{ $report->nama }}</td>
-                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ $report->tgl }}</td>
-                            <td class="px-3 py-6 italic text-slate-300 whitespace-nowrap">{{ $report->spesies }}</td>
-                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ $report->prov }}</td>
-                            <td class="px-3 py-6 text-slate-400 leading-tight">{{ Str::limit($report->lokasi, 45) }}</td>
+                            <td class="px-3 py-6 text-white whitespace-nowrap">{{ $report->user->first_name ?? 'Anonim' }}</td>
+                            
+                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ \Carbon\Carbon::parse($report->tanggal_temuan)->format('d F, Y') }}</td>
+                            
+                            <td class="px-3 py-6 italic text-slate-300 whitespace-nowrap">{{ $report->species }}</td>
+                            
+                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ $provinsi }}</td>
+                            
+                            <td class="px-3 py-6 text-slate-400 leading-tight">{{ Str::limit($lokasi, 45) }}</td>
+                            
+                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap text-center">{{ $report->aktivitas }}</td>
+                            
                             <td class="px-3 py-6 text-center">
                                 @php
                                     $style = match($report->status) {

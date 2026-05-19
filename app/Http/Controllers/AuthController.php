@@ -77,23 +77,26 @@ class AuthController extends Controller
 
     public function showPakarDashboard()
     {
-        $totalLaporan = \App\Models\Report::count();
-        $laporanMenunggu = \App\Models\Report::where('status', 'Menunggu Verifikasi')->count();
-        $laporanDiproses = \App\Models\Report::where('status', 'Sudah Diproses')->count();
-        $recentReports = \App\Models\Report::latest()->take(5)->get();
-
-        $chartData = \App\Models\Report::select('lokasi', \DB::raw('count(*) as total'))
-                    ->groupBy('lokasi')
-                    ->get();
+        $totalLaporan = \App\Models\Laporan::count();
+        $laporanMenunggu = \App\Models\Laporan::where('status', 'Menunggu Verifikasi')->count();
+        $laporanSelesai = \App\Models\Laporan::whereIn('status', ['Terverifikasi', 'Ditolak'])->count();
+        $recentReports = \App\Models\Laporan::latest()->take(5)->get();
+        $semuaLaporan = \App\Models\Laporan::select('alamat_lokasi')->get();
+        
+        $provinsiCounts = $semuaLaporan->map(function ($laporan) {
+            $parts = explode(', Provinsi ', $laporan->alamat_lokasi);
+            return $parts[1] ?? 'Lainnya'; 
+        })->countBy();
 
         return view('pakar.dashboard', [
             'user' => \Illuminate\Support\Facades\Auth::user(),
             'totalLaporan' => $totalLaporan,
             'laporanMenunggu' => $laporanMenunggu,
-            'laporanDiproses' => $laporanDiproses,
+            'laporanDiproses' => $laporanSelesai,
             'recentReports' => $recentReports,
-            'chartLabels' => $chartData->pluck('lokasi'),
-            'chartValues' => $chartData->pluck('total'),
+            
+            'chartLabels' => $provinsiCounts->keys(),
+            'chartValues' => $provinsiCounts->values(),
         ]);
     }
 

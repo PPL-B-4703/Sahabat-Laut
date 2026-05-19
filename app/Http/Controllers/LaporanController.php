@@ -66,7 +66,7 @@ class LaporanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $laporans = Laporan::where('user_id', $user->id)->latest()->get();
+        $laporans = Laporan::where('user_id', auth()->id())->latest()->get();
 
         return view('masyarakat.history', compact('user', 'laporans'));
     }

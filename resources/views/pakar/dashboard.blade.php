@@ -135,7 +135,7 @@
 
         <div class="bg-slate-800/40 p-8 rounded-3xl border border-slate-700 shadow-lg">
             <div class="flex justify-between items-center mb-6">
-                <h4 class="text-xl font-bold text-white">Statistik Laporan Per Wilayah</h4>
+                <h4 class="text-xl font-bold text-white">Laporan Per Provinsi</h4>
             </div>
             <div class="h-[400px]">
                 <canvas id="pakarChart"></canvas>
