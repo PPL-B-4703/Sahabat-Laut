@@ -8,7 +8,7 @@ class Laporan extends Model
 {
     protected $fillable = [
     'user_id', 'species', 'tanggal_temuan', 'deskripsi_temuan', 
-    'aktivitas', 'alamat_lokasi', 'deskripsi_lokasi','latitude', 'longitude', 'attachments', 'status'
+    'aktivitas', 'alamat_lokasi', 'deskripsi_lokasi','latitude', 'longitude', 'attachments', 'status', 'koreksi'
     ];
 
     protected $casts = [
