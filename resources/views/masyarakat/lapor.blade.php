@@ -16,7 +16,7 @@
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-image: url("{{ asset('storage/images/background.jpg') }}");
+            background-image: url("{{ asset('./images/background.jpg') }}");
             background-size: cover; background-position: center; background-attachment: fixed;
             margin: 0; padding: 0; background-color: #004d6b; 
         }
@@ -48,7 +48,7 @@
     <div class="relative w-full min-h-screen">
         <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('storage/images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
+                <img src="{{ asset('./images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
             <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
