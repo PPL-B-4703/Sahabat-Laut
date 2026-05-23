@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; // Tambahkan ini untuk enkripsi password
-
+use Illuminate\Support\Facades\Storage; // Tambahkan ini untuk manajemen file
 class ProfileController extends Controller
 {
     public function edit()

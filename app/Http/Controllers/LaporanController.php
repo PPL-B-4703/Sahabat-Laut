@@ -34,17 +34,24 @@ class LaporanController extends Controller
         $species = ($request->species_category === 'Lainnya') 
                     ? $request->species_other 
                     : $request->species_category;
+        
         $alamatLengkap = "{$request->alamat_detail}, Provinsi {$request->provinsi}";
+        
         $fileNames = [];
         if ($request->hasFile('attachments')) {
-        foreach ($request->file('attachments') as $file) {
-            $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            $file->storeAs('laporan', $name, 'public'); 
-            
-            $fileNames[] = $name;
+            foreach ($request->file('attachments') as $file) {
+                $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                
+                /* 
+                 * PERBAIKAN UTAMA:
+                 * Masukkan ke public_path('storage/laporan')
+                 * File akan langsung masuk secara fisik ke: public/storage/laporan/
+                 */
+                $file->move(public_path('storage/laporan'), $name); 
+                
+                $fileNames[] = $name;
+            }
         }
-    }
 
         Laporan::create([
             'user_id'          => Auth::id(),
@@ -66,10 +73,11 @@ class LaporanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $laporans = Laporan::where('user_id', $user->id)->latest()->get();
+        $laporans = Laporan::where('user_id', auth()->id())->latest()->get();
 
         return view('masyarakat.history', compact('user', 'laporans'));
     }
+
     public function show(int $id)
     {
         $user = Auth::user();
