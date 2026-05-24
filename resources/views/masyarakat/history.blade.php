@@ -18,7 +18,7 @@
             background-color: #004d6b; 
         }
         .bg-sea {
-            background-image: url("{{ asset('./images/background.jpg') }}");
+            background-image: url("{{ asset('images/background.jpg') }}");
             background-size: cover; background-position: center; background-attachment: fixed;
             min-height: 100vh; width: 100%;
         }
@@ -59,14 +59,74 @@
         
         <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('./images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
+                <img src="{{ asset('images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
-            <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
-                <div class="w-10 h-10 rounded-full border-2 bg-white overflow-hidden border-white/50">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
+            
+            <!-- Sisi Kanan Navbar (Notifikasi & Profil Berjajar Rapi) -->
+            <div class="flex items-center gap-4">
+                
+                <!-- INTEGRASI DROPDOWN NOTIFIKASI DENGAN FITUR RESET COUNT -->
+                <div class="relative" 
+                     x-data="{ 
+                        openNotif: false,
+                        count: {{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }},
+                        markAsRead() {
+                            this.openNotif = !this.openNotif;
+                            if (this.openNotif && this.count > 0) {
+                                this.count = 0; // Reset bubble count secara instan di frontend
+                                fetch('{{ route("notifications.markAsRead") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).catch(err => console.error('Gagal memperbarui status notifikasi:', err));
+                            }
+                        }
+                     }">
+                    <button @click="markAsRead()" class="relative p-2 text-white bg-white/10 border border-white/20 rounded-full hover:bg-white/20 transition-all focus:outline-none">
+                        <!-- Icon Lonceng SVG -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        
+                        <!-- Badge Jumlah Notifikasi Aktif -->
+                        <template x-if="count > 0">
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full animate-bounce" x-text="count">
+                            </span>
+                        </template>
+                    </button>
+
+                    <!-- Konten Menu Dropdown List Notifikasi -->
+                    <div x-show="openNotif" @click.away="openNotif = false" x-transition x-cloak
+                         class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 z-[110]">
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-800 text-sm">Notifikasi Terbaru</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            @forelse(auth()->user()->unreadNotifications as $notification)
+                                <a href="{{ route('laporan.show', $notification->data['laporan_id'] ?? 1) }}" class="block px-4 py-3 hover:bg-blue-50/50 border-b border-gray-50 transition-all">
+                                    <p class="text-xs font-bold text-blue-600 mb-0.5">{{ $notification->data['title'] }}</p>
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $notification->data['message'] }}</p>
+                                    <span class="text-[10px] text-gray-400 block mt-1">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="px-4 py-8 text-center text-gray-400 text-xs italic">
+                                    Tidak ada pemberitahuan baru.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
-                <span class="font-semibold text-white text-sm glass-text">{{ $user->first_name }} {{ $user->last_name }}</span>
+
+                <!-- Box Detail Akun Profil -->
+                <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
+                    <div class="w-10 h-10 rounded-full border-2 bg-white overflow-hidden border-white/50">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
+                    </div>
+                    <span class="font-semibold text-white text-sm glass-text">{{ $user->first_name }} {{ $user->last_name }}</span>
+                </div>
             </div>
         </header>
 
@@ -138,7 +198,7 @@
                                                   }" x-text="laporan.status"></span>
                                         </td>
                                         <td class="px-6 py-5 text-center">
-                                            <!-- PERBAIKAN: Menggunakan rute dinamis Laravel di dalam Alpine.js -->
+                                            <!-- Rute dinamis Laravel di dalam Alpine.js -->
                                             <a :href="'/masyarakat/lapor/' + laporan.id" 
                                                class="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-all shadow-md active:scale-95 inline-block">
                                                 Detail

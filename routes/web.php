@@ -9,6 +9,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
 
+
 Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing'); 
 Route::redirect('/', '/beranda');
 
@@ -21,6 +22,11 @@ Route::get('/katalog/{biota}', [KatalogController::class, 'show'])->name('katalo
 Route::view('/regulasi', 'regulasi')->name('regulasi');
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::post('/notifications/mark-as-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return response()->json(['success' => true]);
+    })->name('notifications.markAsRead');
 
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showAdminDashboard'])->name('admin.dashboard');

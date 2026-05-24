@@ -16,7 +16,7 @@
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-image: url("{{ asset('./images/background.jpg') }}");
+            background-image: url("{{ asset('images/background.jpg') }}");
             background-size: cover; background-position: center; background-attachment: fixed;
             margin: 0; padding: 0; background-color: #004d6b; 
         }
@@ -39,23 +39,75 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="overflow-x-hidden min-h-screen">
+<body class="overflow-x-hidden min-h-screen" x-data="laporanManager()">
 
     @if(session('success'))
-        <script>Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", timer: 3000, showConfirmButton: false });</script>
+        <script>
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Laporan Diterima!', 
+                text: "{{ session('success') }}. {{ session('notify_pakar') }}", 
+                confirmButtonColor: '#004d6b',
+                confirmButtonText: 'Buka Riwayat Laporan'
+            });
+        </script>
     @endif
 
     <div class="relative w-full min-h-screen">
+        <!-- HEADER / NAVBAR -->
         <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('./images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
+                <img src="{{ asset('images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
-            <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
-                <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
+            
+            <!-- Sisi Kanan Navbar (Notifikasi & Profil Berjajar Rapi) -->
+            <div class="flex items-center gap-4">
+                <!-- Dropdown Lonceng Notifikasi Dinamis -->
+                <div class="relative">
+                    <!-- PERBAIKAN: Memanggil fungsi markAsRead() dari Alpine JS -->
+                    <button @click="markAsRead()" class="relative p-2 text-white bg-white/10 border border-white/20 rounded-full hover:bg-white/20 transition-all focus:outline-none">
+                        <!-- Icon Lonceng SVG -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        
+                        <!-- PERBAIKAN: Badge Jumlah Notifikasi menggunakan template Alpine x-if -->
+                        <template x-if="count > 0">
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full animate-bounce" x-text="count">
+                            </span>
+                        </template>
+                    </button>
+
+                    <!-- Konten Menu Dropdown List Notifikasi -->
+                    <div x-show="openNotif" @click.away="openNotif = false" x-transition x-cloak
+                         class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 z-[110]">
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-800 text-sm">Notifikasi Terbaru</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            @forelse(auth()->user()->unreadNotifications as $notification)
+                                <a href="{{ $notification->data['url'] ?? '#' }}" class="block px-4 py-3 hover:bg-blue-50/50 border-b border-gray-50 transition-all">
+                                    <p class="text-xs font-bold text-blue-600 mb-0.5">{{ $notification->data['title'] }}</p>
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $notification->data['message'] }}</p>
+                                    <span class="text-[10px] text-gray-400 block mt-1">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="px-4 py-8 text-center text-gray-400 text-xs italic">
+                                    Tidak ada pemberitahuan baru.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
-                <span class="font-semibold text-white text-sm glass-text">{{ $user->first_name }} {{ $user->last_name }}</span>
+
+                <!-- Box Detail Akun Profil -->
+                <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
+                    <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
+                    </div>
+                    <span class="font-semibold text-white text-sm glass-text">{{ $user->first_name }} {{ $user->last_name }}</span>
+                </div>
             </div>
         </header>
 
@@ -84,7 +136,7 @@
                 </form>
             </aside>
 
-            <main class="flex-1" x-data="laporanManager()">
+            <main class="flex-1">
                 <form action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
@@ -128,11 +180,11 @@
 
                     <div class="form-section">
                         <h2 class="text-xl font-bold mb-4 border-b border-black pb-2">Bukti Visual</h2>
-                        <div class="border-2 border-dashed border-black rounded-lg p-10 text-center cursor-pointer hover:bg-gray-50" @click="document.getElementById('file-input').click()">
-                            <input type="file" id="file-input" name="attachments[]" multiple class="hidden" accept="image/*" @change="handleFileChange($event)">
+                        <div class="border-2 border-dashed border-black rounded-lg p-10 text-center cursor-pointer hover:bg-gray-50" @click="$refs.fileInput.click()">
+                            <input type="file" x-ref="fileInput" id="file-input" name="attachments[]" multiple class="hidden" accept="image/*" @change="handleFileChange($event)" @click.stop>
                             <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             <p class="text-gray-500">Klik untuk pilih foto</p>
-                            <div class="mt-6 grid grid-cols-3 md:grid-cols-5 gap-4" x-show="previews.length > 0">
+                            <div class="mt-6 grid grid-cols-3 md:grid-cols-5 gap-4" x-show="previews.length > 0" @click.stop>
                                 <template x-for="src in previews">
                                     <img :src="src" class="w-full aspect-square object-cover rounded-lg border shadow-sm">
                                 </template>
@@ -169,8 +221,8 @@
                                     <textarea name="deskripsi_lokasi" class="input-field h-24 resize-none" placeholder="Titik kenal atau patokan..." required></textarea>
                                 </div>
 
-                                <input type="hidden" name="latitude" :value="lat">
-                                <input type="hidden" name="longitude" :value="lng">
+                                <input type="hidden" name="latitude" :value="lat" value="-6.91750000">
+                                <input type="hidden" name="longitude" :value="lng" value="107.61910000">
                                 <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 font-mono">
                                     Koordinat: <span x-text="lat"></span>, <span x-text="lng"></span>
                                 </div>
@@ -202,7 +254,25 @@
             searchProv: '',
             selectedProv: '',
             openProv: false,
-            lat: -6.9175, lng: 107.6191,
+            openNotif: false,
+            count: {{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }}, // Data jumlah notifikasi ditarik dari backend
+            lat: '-6.91750000', 
+            lng: '107.61910000',
+
+            // PERBAIKAN: Fungsi markAsRead ditaruh dalam komponen global
+            markAsRead() {
+                this.openNotif = !this.openNotif;
+                if (this.openNotif && this.count > 0) {
+                    this.count = 0; // Hapus badge merah seketika secara visual
+                    fetch('{{ route("notifications.markAsRead") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    }).catch(error => console.error('Error saat mereset notifikasi:', error));
+                }
+            },
 
             get filteredProvinces() {
                 return this.provinces.filter(p => p.name.toLowerCase().includes(this.searchProv.toLowerCase()));
@@ -212,9 +282,9 @@
                 const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
                 this.provinces = await res.json();
 
-                const map = L.map('map').setView([this.lat, this.lng], 13);
+                const map = L.map('map').setView([parseFloat(this.lat), parseFloat(this.lng)], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-                const marker = L.marker([this.lat, this.lng], { draggable: true }).addTo(map);
+                const marker = L.marker([parseFloat(this.lat), parseFloat(this.lng)], { draggable: true }).addTo(map);
 
                 marker.on('dragend', () => {
                     const pos = marker.getLatLng();
