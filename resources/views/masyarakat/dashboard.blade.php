@@ -8,11 +8,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- TAMBAHAN: Script Alpine.js wajib agar dropdown notifikasi berfungsi -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-image: url("{{ asset('./images/background.jpg') }}");
+            background-image: url("{{ asset('images/background.jpg') }}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -45,7 +47,7 @@
         
         <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('./images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
+                <img src="{{ asset('images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
 
@@ -58,7 +60,63 @@
                 </a>
             </nav>
 
-            <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4">
+                
+                <!-- INTEGRASI DROPDOWN NOTIFIKASI DENGAN FITUR RESET COUNT -->
+                <div class="relative" 
+                     x-data="{ 
+                        openNotif: false,
+                        count: {{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }},
+                        markAsRead() {
+                            this.openNotif = !this.openNotif;
+                            if (this.openNotif && this.count > 0) {
+                                this.count = 0; // Reset bubble count secara instan
+                                fetch('{{ route("notifications.markAsRead") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).catch(err => console.error('Gagal memperbarui status notifikasi:', err));
+                            }
+                        }
+                     }">
+                    <button @click="markAsRead()" class="relative p-2 text-white bg-white/10 border border-white/20 rounded-full hover:bg-white/20 transition-all focus:outline-none">
+                        <!-- Icon Lonceng SVG -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        
+                        <!-- Badge Jumlah Notifikasi Aktif -->
+                        <template x-if="count > 0">
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full animate-bounce" x-text="count">
+                            </span>
+                        </template>
+                    </button>
+
+                    <!-- Konten Menu Dropdown List Notifikasi -->
+                    <div x-show="openNotif" @click.away="openNotif = false" x-transition x-cloak
+                         class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 z-[110]">
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-800 text-sm">Notifikasi Terbaru</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            @forelse(auth()->user()->unreadNotifications as $notification)
+                                <a href="{{ route('laporan.show', $notification->data['laporan_id'] ?? 1) }}" class="block px-4 py-3 hover:bg-blue-50/50 border-b border-gray-50 transition-all">
+                                    <p class="text-xs font-bold text-blue-600 mb-0.5">{{ $notification->data['title'] }}</p>
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $notification->data['message'] }}</p>
+                                    <span class="text-[10px] text-gray-400 block mt-1">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="px-4 py-8 text-center text-gray-400 text-xs italic">
+                                    Tidak ada pemberitahuan baru.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian Profil -->
                 <a href="{{ route('masyarakat.profil.edit') }}" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-all p-1 pr-4 rounded-full border border-white/20 backdrop-blur-sm cursor-pointer">
                     <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden shadow-lg">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=random" alt="Profile">
@@ -67,13 +125,6 @@
                         {{ $user->first_name }} {{ $user->last_name }}
                     </span>
                 </a>
-
-                <button class="relative p-2 rounded-full hover:bg-white/10 transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    <span class="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-red-600 border-2 border-[#0077a9]"></span>
-                </button>
             </div>
         </header>
 
@@ -145,7 +196,6 @@
                         </div>
                     </div>
 
-                    <!-- INI BAGIAN YANG DIUBAH MENJADI <a> -->
                     <a href="{{ route('masyarakat.statistik') }}" class="block w-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-lg border border-white/20 rounded-[24px] p-8 shadow-xl mt-4 cursor-pointer group">
                         <h3 class="text-white font-bold text-base mb-6">Temuan Tervalidasi Mamalia Laut</h3>
                         
@@ -173,8 +223,6 @@
                             </div>
                         </div>
                     </a>
-                    <!-- BATAS BAGIAN YANG DIUBAH -->
-
                 </main>
 
                 <aside class="w-[300px] flex flex-col gap-8 mt-10">
@@ -203,6 +251,5 @@
         </div>
     </div>
 
-    <script src="//unpkg.com/alpinejs" defer></script>
 </body>
 </html>

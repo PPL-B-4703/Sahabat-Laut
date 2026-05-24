@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Validasi - {{ $report->nama }}</title>
+    <title>Detail Validasi - {{ $report->nama ?? 'Laporan' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -13,7 +13,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-[#0F172A] text-white overflow-x-hidden" x-data="{ notificationsOpen: false, selectAll: false }">
+<body class="bg-[#0F172A] text-white overflow-x-hidden">
 
     <aside class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col fixed h-full z-30">
         <div class="p-6">
@@ -69,11 +69,32 @@
                         </p>
                     </a>
                     
-                    <div class="relative">
-                        <button @click="notificationsOpen = !notificationsOpen" 
+                    <!-- INTEGRASI NOTIFIKASI PAKAR (RESET BUBBLE COUNT) -->
+                    <div class="relative" 
+                         x-data="{ 
+                            notificationsOpen: false, 
+                            count: {{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }},
+                            markAsRead() {
+                                this.notificationsOpen = !this.notificationsOpen;
+                                if (this.notificationsOpen && this.count > 0) {
+                                    this.count = 0; // Hapus titik merah seketika
+                                    fetch('{{ route("notifications.markAsRead") }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                            'Content-Type': 'application/json'
+                                        }
+                                    }).catch(err => console.error('Gagal memproses notifikasi pakar:', err));
+                                }
+                            }
+                         }">
+                         
+                        <button @click="markAsRead()" 
                                 class="w-12 h-12 bg-[#131C31] border border-slate-700/40 rounded-2xl flex items-center justify-center text-blue-500 relative transition-all active:scale-95">
                             <i class="ph-bold ph-bell text-2xl"></i>
-                            <span class="absolute top-3 right-3.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#131C31]"></span>
+                            <template x-if="count > 0">
+                                <span class="absolute top-3 right-3.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#131C31] animate-pulse"></span>
+                            </template>
                         </button>
 
                         <div x-show="notificationsOpen" 
@@ -82,10 +103,23 @@
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95"
                             x-transition:enter-end="opacity-100 scale-100"
-                            class="absolute right-0 mt-4 w-72 bg-[#131C31] border border-slate-700/60 rounded-3xl shadow-2xl z-50 overflow-hidden text-left">
-                            <div class="p-5 border-b border-slate-800/60 font-bold text-xs uppercase tracking-widest text-slate-500">Notifikasi</div>
-                            <div class="p-8 text-center text-slate-500 italic text-xs">
-                                Belum ada notifikasi baru
+                            class="absolute right-0 mt-4 w-80 bg-[#131C31] border border-slate-700/60 rounded-3xl shadow-2xl z-50 overflow-hidden text-left">
+                            <div class="p-5 border-b border-slate-800/60 font-bold text-xs uppercase tracking-widest text-slate-400 flex justify-between items-center">
+                                <span>Notifikasi Masuk</span>
+                                <template x-if="count > 0">
+                                    <span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full text-[10px]" x-text="count + ' Baru'"></span>
+                                </template>
+                            </div>
+                            <div class="max-h-72 overflow-y-auto">
+                                @forelse(auth()->user()->unreadNotifications as $notification)
+                                    <a href="{{ route('pakar.validasi.show', $notification->data['laporan_id'] ?? 1) }}" class="block p-4 border-b border-slate-800/40 hover:bg-slate-800/30 transition-all text-left">
+                                        <p class="text-xs font-bold text-blue-400 mb-1">{{ $notification->data['title'] }}</p>
+                                        <p class="text-xs text-slate-300 leading-relaxed">{{ $notification->data['message'] }}</p>
+                                        <span class="text-[10px] text-slate-500 block mt-2">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </a>
+                                @empty
+                                    <div class="p-8 text-center text-slate-500 italic text-xs">Belum ada notifikasi baru</div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
