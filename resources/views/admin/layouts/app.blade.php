@@ -49,12 +49,13 @@
                     <span>Beranda</span>
                 </a>
 
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-800 opacity-50 cursor-not-allowed transition-colors">
+                <a href="{{ route('admin.berita.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg @if(str_contains(Route::currentRouteName(), 'admin.berita')) bg-blue-600 text-white @else text-slate-300 hover:bg-slate-800 @endif transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v4m2 0h-4m0 0l2-2m-2 2l-2-2" />
                     </svg>
                     <span>Manajemen Berita</span>
-                </a>
+</a>
             </nav>
 
             <!-- User Profile -->
