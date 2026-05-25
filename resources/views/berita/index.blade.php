@@ -11,8 +11,8 @@
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="{{ route('landing') }}" class="text-xl font-bold text-blue-600">Sahabat Laut</a>
-            <a href="{{ route('landing') }}" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">&larr; Kembali ke Beranda</a>
-        </div>
+            <a href="{{ route('landing') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors">Kembali ke Beranda</a>
+        </div>  
     </nav>
 
     <header class="bg-white border-b border-gray-100 py-12 mb-12">
