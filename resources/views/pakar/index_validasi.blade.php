@@ -66,9 +66,15 @@
     <main class="main-content">
         <div class="content-container">
             <header class="flex justify-between items-center mb-10 pr-6">
-                <div>
-                    <h2 class="text-[32px] font-dashboard-bold text-white tracking-tight">Daftar Validasi</h2>
-                    <p class="text-slate-400 text-base font-bold mt-1">Kelola laporan biota laut terbaru.</p>
+                <div class="flex-1 flex items-center justify-between mr-8 lg:mr-16">
+                    <div>
+                        <h2 class="text-[32px] font-bold text-white tracking-tight">Daftar Validasi</h2>
+                        <p class="text-slate-400 text-base font-bold mt-1">Kelola laporan biota laut terbaru.</p>
+                    </div>
+                    <button type="button" onclick="validasiEkspor()" class="shrink-0 bg-[#131C31] text-blue-500 border border-blue-500/50 hover:bg-blue-600 hover:text-white font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 transition-all text-sm shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Ekspor Laporan
+                    </button>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -132,54 +138,91 @@
 
         <div class="table-card shadow-2xl mr-6">
             <div class="w-full overflow-x-auto no-scrollbar">
-                <table class="w-full text-left table-auto">
-                    <thead class="text-xs text-gray-400 uppercase bg-[#0B1221] border-b border-gray-700">
-                        <tr>
-                            <th scope="col" class="p-4"><input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded"></th>
-                            <th scope="col" class="px-6 py-4 font-semibold">NAMA</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">TANGGAL LAPOR</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">SPESIES</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">PROVINSI</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">LOKASI</th>
-                            <th scope="col" class="px-6 py-4 font-semibold text-center">AKTIVITAS</th>
-                            <th scope="col" class="px-6 py-4 font-semibold text-center">STATUS</th>
-                            <th scope="col" class="px-6 py-4 font-semibold text-center">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-[13px] font-bold">
-                        @foreach($reports as $report)
-                        @php
-                            $alamatArray = explode(', Provinsi ', $report->alamat_lokasi);
-                            $lokasi = $alamatArray[0] ?? $report->alamat_lokasi;
-                            $provinsi = $alamatArray[1] ?? '-';
-                        @endphp
-                        <tr class="border-b border-slate-800/30 hover:bg-slate-800/20 transition-all">
-                            <td class="pl-10 py-6"><input type="checkbox" class="rounded bg-slate-900 border-slate-700"></td>
-                            <td class="px-3 py-6 text-white whitespace-nowrap">{{ $report->user->first_name ?? 'Anonim' }}</td>
-                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ \Carbon\Carbon::parse($report->tanggal_temuan)->format('d F, Y') }}</td>
-                            <td class="px-3 py-6 italic text-slate-300 whitespace-nowrap">{{ $report->species }}</td>
-                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap">{{ $provinsi }}</td>
-                            <td class="px-3 py-6 text-slate-400 leading-tight">{{ Str::limit($lokasi, 45) }}</td>
-                            <td class="px-3 py-6 text-slate-400 whitespace-nowrap text-center">{{ $report->aktivitas }}</td>
-                            <td class="px-3 py-6 text-center">
-                                @php
-                                    $style = match($report->status) {
-                                        'Terverifikasi' => 'bg-green-500/10 text-green-500 border-green-500/20',
-                                        'Ditolak' => 'bg-red-500/10 text-red-500 border-red-500/20',
-                                        default => 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-                                    };
-                                @endphp
-                                <span class="px-3 py-1.5 text-[10px] font-extrabold uppercase border rounded-xl {{ $style }}">
-                                    {{ $report->status }}
-                                </span>
-                            </td>
-                            <td class="pr-10 py-6 text-right">
-                                <a href="{{ route('pakar.validasi.show', $report->id) }}" class="inline-block py-2 px-5 bg-blue-600 text-white text-[10px] font-extrabold rounded-xl shadow-lg hover:bg-blue-500 transition-all">DETAIL</a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <form id="formEksporLaporan" action="{{ route('pakar.export.laporan') }}" method="GET">
+                    <table class="w-full text-left table-auto">
+                        <thead class="text-xs text-gray-400 uppercase bg-[#0B1221] border-b border-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-4">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" onclick="toggleSemua(this)" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-600 focus:ring-2">
+                                    </div>
+                                </th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-left">NAMA</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-left">TANGGAL LAPOR</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">SPESIES</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">PROVINSI</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">LOKASI</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">AKTIVITAS</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">STATUS</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-[13px] font-bold">
+                            @foreach($reports as $report)
+                            @php
+                                $alamatArray = explode(', Provinsi ', $report->alamat_lokasi);
+                                $lokasi = $alamatArray[0] ?? $report->alamat_lokasi;
+                                $provinsi = $alamatArray[1] ?? '-';
+                            @endphp
+                            <tr class="border-b border-slate-800/30 hover:bg-slate-800/20 transition-all">
+                                <td class="px-4 py-6">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" name="ids[]" value="{{ $report->id }}" class="ceklis-laporan w-4 h-4 text-blue-600 rounded bg-slate-900 border-slate-700">
+                                    </div>
+                                </td>
+                                
+                                <td class="px-6 py-6 text-white whitespace-nowrap text-left">{{ $report->user->first_name ?? 'Anonim' }}</td>
+                                
+                                <td class="px-6 py-6 text-slate-400 whitespace-nowrap text-left">{{ \Carbon\Carbon::parse($report->tanggal_temuan)->format('d F, Y') }}</td>
+                                
+                                <td class="px-6 py-6 italic text-slate-300 whitespace-nowrap text-center">{{ $report->species }}</td>
+                                
+                                <td class="px-6 py-6 text-slate-400 whitespace-nowrap text-center">{{ $provinsi }}</td>
+                                
+                                <td class="px-6 py-6 text-slate-400 leading-tight text-center">{{ Str::limit($lokasi, 45) }}</td>
+                                
+                                <td class="px-6 py-6 text-slate-400 whitespace-nowrap text-center">{{ $report->aktivitas }}</td>
+                                
+                                <td class="px-6 py-6 text-center">
+                                    @php
+                                        $style = match($report->status) {
+                                            'Terverifikasi' => 'bg-green-500/10 text-green-500 border-green-500/20',
+                                            'Ditolak' => 'bg-red-500/10 text-red-500 border-red-500/20',
+                                            default => 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                                        };
+                                    @endphp
+                                    <span class="whitespace-nowrap px-3 py-1.5 text-[10px] font-extrabold uppercase border rounded-xl {{ $style }}">
+                                        {{ $report->status }}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-6 py-6 text-center">
+                                    <a href="{{ route('pakar.validasi.show', $report->id) }}" class="inline-block py-2 px-5 bg-blue-600 text-white text-[10px] font-extrabold rounded-xl shadow-lg hover:bg-blue-500 transition-all">DETAIL</a>
+                                </td>
+                            </tr>
+                            @endforeach
+                            <script>
+                                function toggleSemua(source) {
+                                    let checkboxes = document.querySelectorAll('.ceklis-laporan');
+                                    checkboxes.forEach(cb => {
+                                        cb.checked = source.checked;
+                                    });
+                                }
+
+                                function validasiEkspor() {
+                                    let ygDiceklis = document.querySelectorAll('.ceklis-laporan:checked');
+                                    
+                                    if(ygDiceklis.length === 0) {
+                                        window.dispatchEvent(new CustomEvent('tampil-peringatan'));
+                                        return;
+                                    }
+                                    
+                                    document.getElementById('formEksporLaporan').submit();
+                                }
+                            </script>
+                        </tbody>
+                    </table>
+                </form>
             </div>
 
             <div class="px-10 py-8 bg-[#0F172A]/30 flex justify-between items-center border-t border-slate-800/50">
@@ -202,10 +245,26 @@
             </div>
         </div>
     </main>
-
-    <script>
-        // Memastikan tidak ada konflik Alpine jika dipanggil kembali
-        window.Alpine = window.Alpine || {};
-    </script>
+        <div x-data="{ openAlert: false }" 
+            @tampil-peringatan.window="openAlert = true" 
+            x-show="openAlert" 
+            style="display: none;" 
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+            
+            <div @click.away="openAlert = false" 
+                class="bg-[#131C31] border border-slate-700/50 rounded-3xl p-6 w-[320px] shadow-2xl text-center transform scale-100 transition-all">
+                
+                <div class="mx-auto w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-4 border border-red-500/20">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                
+                <h3 class="text-white font-bold text-lg mb-2">Peringatan</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Harap pilih (ceklis) minimal satu laporan terlebih dahulu untuk diekspor.</p>
+                
+                <button @click="openAlert = false" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-blue-900/20">
+                    OK, Mengerti
+                </button>
+            </div>
+        </div>
 </body>
 </html>

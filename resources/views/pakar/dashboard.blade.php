@@ -52,10 +52,16 @@
     </aside>
 
     <main class="flex-1 ml-64 p-8">
-        <header class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="text-3xl font-bold text-white">Dashboard Utama</h2>
-                <p class="text-slate-400">Statistik pantauan biota laut terkini.</p>
+        <header class="flex justify-between items-center mb-10 pr-6">
+            <div class="flex-1 flex items-center justify-between mr-8 lg:mr-16">
+                <div>
+                    <h2 class="text-3xl font-bold text-white">Dashboard Utama</h2>
+                    <p class="text-slate-400">Statistik pantauan biota laut terkini.</p>
+                </div>
+                <a href="{{ route('pakar.generate.dataset') }}" class="shrink-0 bg-[#131C31] text-blue-500 border border-blue-500/50 hover:bg-blue-600 hover:text-white font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 transition-all text-sm shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Generate Dataset (CSV)
+                </a>
             </div>
             
             <div class="flex items-center gap-4">
