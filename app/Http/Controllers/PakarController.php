@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Response;
 use App\Models\Laporan;
 
 class PakarController extends Controller
@@ -58,5 +60,64 @@ class PakarController extends Controller
     {
         $user = auth()->user(); 
         return view('pakar.edit_profile', compact('user'));
+    }
+
+    public function exportLaporan(\Illuminate\Http\Request $request)
+    {
+        if (!$request->has('ids') || empty($request->ids)) {
+            return redirect()->back()->with('error', 'Pilih minimal satu laporan.');
+        }
+
+        $laporan = \App\Models\Laporan::whereIn('id', $request->ids)->get();
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pakar.export_pdf', compact('laporan'));
+        return $pdf->download('Laporan_Validasi_Pakar.pdf');
+    }
+
+    public function generateDataset()
+    {
+        $laporan = \App\Models\Laporan::all(); // Narik semua data buat riset pakar
+        $csvFileName = 'Dataset_Biota_Laut_Pakar_' . date('Ymd') . '.csv';
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$csvFileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use($laporan) {
+            $file = fopen('php://output', 'w');
+            
+            // Header CSV disesuaikan dengan standar open data
+            fputcsv($file, ['ID_Laporan', 'Tanggal_Temuan', 'Spesies', 'Aktivitas', 'Lokasi_Spesifik', 'Provinsi', 'Status_Validasi', 'Deskripsi_Temuan']);
+
+            foreach ($laporan as $row) {
+                // Logic aman buat misahin Lokasi dan Provinsi
+                $alamatOri = $row->alamat_lokasi ?? '';
+                $alamatArray = explode(', Provinsi ', $alamatOri);
+                
+                $lokasiBersih = trim($alamatArray[0]);
+                // Kalau $row->prov kosong, ambil dari potongan alamat. Kalau masih kosong juga, kasih '-'
+                $provinsi = !empty($row->prov) ? $row->prov : (isset($alamatArray[1]) ? trim($alamatArray[1]) : '-');
+                
+                // Rapihin format tanggal
+                $tanggal = is_object($row->tanggal_temuan) ? $row->tanggal_temuan->format('Y-m-d') : $row->tanggal_temuan;
+
+                fputcsv($file, [
+                    $row->id, 
+                    $tanggal,
+                    $row->species, 
+                    $row->aktivitas, 
+                    $lokasiBersih, 
+                    strtoupper($provinsi), // Dibikin huruf kapital semua biar seragam 
+                    $row->status, 
+                    $row->deskripsi_temuan
+                ]);
+            }
+            fclose($file);
+        };
+
+        return \Illuminate\Support\Facades\Response::stream($callback, 200, $headers);
     }
 }

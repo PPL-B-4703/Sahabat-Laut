@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
         Route::get('/profile', [PakarController::class, 'editProfile'])->name('pakar.profile');
         Route::patch('/validasi/{id}', [PakarController::class, 'updateStatus'])->name('pakar.validasi.update');
+        Route::get('/pakar/export-laporan', [PakarController::class, 'exportLaporan'])->name('pakar.export.laporan');
+        Route::get('/pakar/generate-dataset', [PakarController::class, 'generateDataset'])->name('pakar.generate.dataset');
     });
 
     Route::middleware('role:masyarakat')->prefix('masyarakat')->group(function () {
