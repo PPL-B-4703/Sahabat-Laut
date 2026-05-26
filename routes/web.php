@@ -12,7 +12,6 @@ use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing');
 Route::redirect('/', '/beranda');
 
@@ -32,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/notifications/mark-as-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
+
         return response()->json(['success' => true]);
     })->name('notifications.markAsRead');
 
