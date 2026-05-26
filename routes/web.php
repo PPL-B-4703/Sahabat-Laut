@@ -21,7 +21,11 @@ Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index
 Route::get('/katalog/{biota}', [KatalogController::class, 'show'])->name('katalog.show');
 Route::view('/regulasi', 'regulasi')->name('regulasi');
 
+
 Route::middleware(['auth'])->group(function () {
+    
+    Route::get('/export/katalog/pdf', [App\Http\Controllers\KatalogController::class, 'exportPdf'])->name('katalog.export.pdf');
+    Route::get('/export/katalog/csv', [App\Http\Controllers\KatalogController::class, 'generateCsv'])->name('katalog.generate.csv');
 
     Route::post('/notifications/mark-as-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
@@ -33,14 +37,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware('role:pakar')->prefix('pakar')->group(function () {
-        Route::get('/dashboard', [AuthController::class, 'showPakarDashboard'])->name('pakar.dashboard');
+        Route::get('/dashboard', [PakarController::class, 'showPakarDashboard'])->name('pakar.dashboard');
         Route::get('/validasi', [PakarController::class, 'index'])->name('pakar.validasi');
         Route::get('/validasi/{id}', [PakarController::class, 'show'])->name('pakar.validasi.show');
         Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
         Route::get('/profile', [PakarController::class, 'editProfile'])->name('pakar.profile');
         Route::patch('/validasi/{id}', [PakarController::class, 'updateStatus'])->name('pakar.validasi.update');
-        Route::get('/pakar/export-laporan', [PakarController::class, 'exportLaporan'])->name('pakar.export.laporan');
-        Route::get('/pakar/generate-dataset', [PakarController::class, 'generateDataset'])->name('pakar.generate.dataset');
+        Route::post('/validasi/bulk-verify', [App\Http\Controllers\PakarController::class, 'bulkVerify'])->name('pakar.validasi.bulk');
     });
 
     Route::middleware('role:masyarakat')->prefix('masyarakat')->group(function () {
