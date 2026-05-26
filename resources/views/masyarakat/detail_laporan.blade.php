@@ -13,7 +13,8 @@
     <style>
         body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background-color: #004d6b; }
         .bg-sea {
-            background-image: url("{{ asset('storage/images/background.jpg') }}");
+            /* PERBAIKAN: Karena background ada di public/images/, panggil langsung tanpa kata 'storage/' */
+            background-image: url("{{ asset('images/background.jpg') }}");
             background-size: cover; background-position: center; background-attachment: fixed;
             min-height: 100vh; width: 100%;
         }
@@ -34,13 +35,27 @@
         $alamatArray = explode(', Provinsi ', $laporan->alamat_lokasi);
         $namaLokasi = $alamatArray[0] ?? $laporan->alamat_lokasi;
         $namaProvinsi = $alamatArray[1] ?? '-';
-        $photos = is_string($laporan->attachments) ? json_decode($laporan->attachments, true) : ($laporan->attachments ?? []);
+
+        // Penanganan anti-gagal untuk memastikan data lampiran diubah menjadi array PHP yang bersih
+        $rawAttachments = $laporan->attachments;
+        if (is_string($rawAttachments)) {
+            $decoded = json_decode($rawAttachments, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $attachmentsArray = $decoded;
+            } else {
+                $attachmentsArray = [$rawAttachments];
+            }
+        } else {
+            $attachmentsArray = (array) $rawAttachments;
+        }
+        $attachmentsArray = array_filter($attachmentsArray);
     @endphp
 
     <div class="relative w-full min-h-screen">
         <header class="fixed top-0 left-0 w-full h-[100px] flex items-center justify-between px-12 z-[100] bg-[#0077a9]/10 backdrop-blur-md border-b border-white/10">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('storage/images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
+                <!-- PERBAIKAN: Logo diambil langsung dari public/images/logo.png -->
+                <img src="{{ asset('images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
             <div class="flex items-center gap-3 bg-white/10 p-1 pr-4 rounded-full border border-white/20">
@@ -93,10 +108,11 @@
                     <div class="flex-1 flex flex-col gap-6">
                         <div class="glass-box flex flex-col gap-6">
 
+                            <!-- KONSISTENSI JALUR: Gambar Laporan dibaca via asset('storage/laporan/...') merujuk ke image_bdd968.png -->
                             <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/20 border border-white/10 shadow-inner group" 
                                  x-data="{ 
                                     active: 0, 
-                                    images: {{ json_encode(array_map(fn($p) => asset('storage/laporan/'.$p), $photos)) }},
+                                    images: {{ json_encode(array_map(fn($p) => asset('storage/laporan/'.$p), $attachmentsArray)) }},
                                     next() { this.active = (this.active + 1) % this.images.length },
                                     prev() { this.active = (this.active - 1 + this.images.length) % this.images.length }
                                  }">
@@ -149,35 +165,75 @@
                             <h3 class="text-white font-bold text-xl mb-8">Progress Pelaporan</h3>
                             <div class="flex flex-col">
                                 <div class="flex items-center gap-4">
-                                    <div class="progress-dot bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"><svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div>
+                                    <div class="progress-dot bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+                                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                        </svg>
+                                    </div>
                                     <span class="text-white font-semibold">Laporan Diterima</span>
                                 </div>
-                                <div class="progress-line {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'active' : '' }}"></div>
+                                <div class="progress-line {{ in_array($laporan->status, ['Menunggu Verifikasi', 'Terverifikasi', 'Ditolak']) ? 'active' : '' }}"></div>
+                                
                                 <div class="flex items-center gap-4">
-                                    <div class="progress-dot {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'bg-white/30 border-2 border-white/20' }}">
-                                        @if(in_array($laporan->status, ['Terverifikasi', 'Ditolak']))<svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>@endif
+                                    <div class="progress-dot {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : ($laporan->status == 'Menunggu Verifikasi' ? 'bg-white/80 animate-pulse' : 'bg-white/30 border-2 border-white/20') }}">
+                                        @if(in_array($laporan->status, ['Terverifikasi', 'Ditolak', 'Menunggu Verifikasi']))
+                                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                            </svg>
+                                        @endif
                                     </div>
-                                    <span class="font-semibold {{ $laporan->status == 'Menunggu Verifikasi' ? 'text-white' : 'text-white/60' }}">Sedang Ditinjau Pakar</span>
+                                    <span class="font-semibold {{ in_array($laporan->status, ['Menunggu Verifikasi', 'Terverifikasi', 'Ditolak']) ? 'text-white' : 'text-white/60' }}">Sedang Ditinjau Pakar</span>
                                 </div>
                                 <div class="progress-line {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'active' : '' }}"></div>
+                                
                                 <div class="flex items-center gap-4">
                                     <div class="progress-dot {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'bg-white/30 border-2 border-white/20' }}">
-                                        @if($laporan->status == 'Terverifikasi')<svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                                        @elseif($laporan->status == 'Ditolak')<svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>@endif
+                                        @if($laporan->status == 'Terverifikasi')
+                                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                            </svg>
+                                        @elseif($laporan->status == 'Ditolak')
+                                            <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                        @endif
                                     </div>
-                                    <span class="font-semibold {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'text-white' : 'text-white/60' }}">Hasil Validasi: {{ $laporan->status }}</span>
+                                    <span class="font-semibold {{ in_array($laporan->status, ['Terverifikasi', 'Ditolak']) ? 'text-white' : 'text-white/60' }}">
+                                        Hasil Validasi: 
+                                        @if($laporan->status == 'Terverifikasi')
+                                            <span class="text-green-400">Terverifikasi</span>
+                                        @elseif($laporan->status == 'Ditolak')
+                                            <span class="text-red-400">Ditolak</span>
+                                        @else
+                                            <span class="text-yellow-400">Memproses</span>
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="glass-box">
                             <h3 class="text-white font-bold text-xl mb-2">Ditinjau oleh:</h3>
-                            <p class="text-white/70 font-medium mb-6 italic">{{ $laporan->expert->name ?? 'Tim Ahli Sahabat Laut' }}</p>
+                            <p class="text-white/70 font-medium mb-6 italic">
+                                {{ $laporan->expert->name ?? 'Tim Ahli Sahabat Laut' }}
+                            </p>
+                            
                             <h4 class="text-white font-bold text-sm mb-3 uppercase tracking-wider">Catatan Pakar :</h4>
-                            <div class="w-full min-h-[160px] bg-black/20 rounded-2xl border border-white/5 p-5 text-white/80 text-sm leading-relaxed shadow-inner">
-                                {{ $laporan->catatan_expert ?? 'Laporan Anda sedang dalam tahap verifikasi oleh tim pakar kami.' }}
-                            </div>
+                            @if($laporan->status == 'Terverifikasi')
+                                <div class="w-full min-h-[160px] bg-green-950/30 rounded-2xl border border-green-500/20 p-5 text-white/90 text-sm leading-relaxed shadow-inner">
+                                    {{ $laporan->koreksi ?? 'Laporan terverifikasi. Terima kasih atas kontribusi Anda dalam menjaga ekosistem laut.' }}
+                                </div>
+                            @elseif($laporan->status == 'Ditolak')
+                                <div class="w-full min-h-[160px] bg-red-950/30 rounded-2xl border border-red-500/20 p-5 text-white/90 text-sm leading-relaxed shadow-inner">
+                                    {{ $laporan->koreksi ?? 'Laporan ditolak karena bukti visual atau data pendukung kurang valid.' }}
+                                </div>
+                            @else
+                                <div class="w-full min-h-[160px] bg-black/20 rounded-2xl border border-white/5 p-5 text-white/60 text-sm leading-relaxed shadow-inner italic">
+                                    Laporan Anda sedang dalam tahap verifikasi oleh tim pakar kami. Mohon cek halaman ini secara berkala untuk pembaruan.
+                                </div>
+                            @endif
                         </div>
+
                     </div>
                 </div>
             </main>

@@ -6,21 +6,51 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Response;
 use App\Models\Laporan;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\LaporanBaruNotification;
 
 class PakarController extends Controller
 {
     public function showPakarDashboard()
     {
-        $totalLaporan = \App\Models\Laporan::count();
-        $laporanMenunggu = \App\Models\Laporan::where('status', 'Menunggu Verifikasi')->count();
-        $laporanSelesai = \App\Models\Laporan::whereIn('status', ['Terverifikasi', 'Ditolak'])->count();
-        $recentReports = \App\Models\Laporan::latest()->take(5)->get();
+        $totalLaporan = Laporan::count();
+        $laporanMenunggu = Laporan::where('status', 'Menunggu Verifikasi')->count();
+        $laporanSelesai = Laporan::whereIn('status', ['Terverifikasi', 'Ditolak'])->count();
+        $recentReports = Laporan::latest()->take(5)->get();
+
+        // --- LOGIC TAMBAHAN UNTUK GRAFIK PROVINSI ---
+        // Mengambil data alamat_lokasi, memecah string untuk mendapatkan nama Provinsi, lalu menghitungnya
+        $laporanPerProvinsi = Laporan::select('alamat_lokasi', DB::raw('count(*) as total'))
+            ->groupBy('alamat_lokasi')
+            ->get();
+
+        $provinsiData = [];
+        foreach ($laporanPerProvinsi as $item) {
+            // Memecah teks "Nama Lokasi, Provinsi Jawa Barat" mengambil bagian setelah kata "Provinsi "
+            $parts = explode(', Provinsi ', $item->alamat_lokasi);
+            $namaProvinsi = $parts[1] ?? 'Luar Provinsi / Tidak Diketahui';
+            
+            if (!isset($provinsiData[$namaProvinsi])) {
+                $provinsiData[$namaProvinsi] = 0;
+            }
+            $provinsiData[$namaProvinsi] += $item->total;
+        }
+
+        // Ambil maksimal 5-7 provinsi teratas untuk grafik agar tidak terlalu penuh
+        arsort($provinsiData);
+        $provinsiData = array_slice($provinsiData, 0, 7, true);
+
+        $chartLabels = array_keys($provinsiData);
+        $chartValues = array_values($provinsiData);
+        // --------------------------------------------
 
         return view('pakar.dashboard', compact(
             'totalLaporan', 
             'laporanMenunggu', 
             'laporanSelesai', 
-            'recentReports'
+            'recentReports',
+            'chartLabels',
+            'chartValues'
         ));
     }
 
@@ -52,6 +82,14 @@ class PakarController extends Controller
         $report->status = $request->status;
         $report->koreksi = $request->koreksi;
         $report->save();
+
+        $userMasyarakat = $report->user; 
+
+        if ($userMasyarakat) {
+            $userMasyarakat->notify(new LaporanBaruNotification($report, 'status_diperbarui'));
+        }
+
+        // ===============================================================================
 
         return redirect()->route('pakar.validasi')->with('success', 'Validasi laporan berhasil disimpan!');
     }
