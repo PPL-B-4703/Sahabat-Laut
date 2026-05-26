@@ -18,7 +18,7 @@
         
         <div class="hidden lg:block lg:w-[60%] relative bg-slate-100">
             <img 
-                src="{{ asset('storage/images/register.png') }}" 
+                src="{{ asset('./images/register.png') }}" 
                 alt="Sign Up Background" 
                 class="absolute inset-0 w-full h-full object-cover"
             >
@@ -29,7 +29,7 @@
             <div class="flex flex-col gap-8 w-full max-w-md mx-auto my-auto">
                 
                 <div class="flex items-center gap-3 h-12">
-                    <img src="{{ asset('storage/images/logo.png') }}" class="w-10 h-10 object-contain" alt="Logo">
+                    <img src="{{ asset('./images/logo.png') }}" class="w-10 h-10 object-contain" alt="Logo">
                     <span class="font-bold text-black text-xl tracking-tight">Sahabat Laut</span>
                 </div>
 
