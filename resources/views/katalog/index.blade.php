@@ -143,15 +143,30 @@
 <!-- GRID -->
 <section class="px-10 py-20 bg-[#06111d]">
 
-    <div class="flex items-center justify-between mb-12 border-b border-white/5 pb-6">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 border-b border-white/5 pb-6 gap-4">
 
-        <h2 class="text-3xl font-bold">
-            Semua Spesies
-        </h2>
+        <div class="flex items-center gap-4">
+            <h2 class="text-3xl font-bold">
+                Semua Spesies
+            </h2>
+            <p class="px-4 py-2 bg-white/5 rounded-lg text-cyan-400 font-bold text-sm border border-white/10 hidden sm:block">
+                {{ $biotas->count() }} Terdaftar
+            </p>
+        </div>
 
-        <p class="px-4 py-2 bg-white/5 rounded-lg text-cyan-400 font-bold text-sm border border-white/10">
-            {{ $biotas->count() }} Terdaftar
-        </p>
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+            
+            <a href="{{ route('katalog.export.pdf') }}" class="w-full sm:w-auto bg-white/5 text-cyan-400 border border-cyan-400/50 hover:bg-cyan-400 hover:text-slate-900 font-bold py-2.5 px-5 rounded-xl flex justify-center items-center gap-2 transition-all text-sm shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Unduh PDF
+            </a>
+
+            <a href="{{ route('katalog.generate.csv') }}" class="w-full sm:w-auto bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-bold py-2.5 px-5 rounded-xl flex justify-center items-center gap-2 transition-all text-sm shadow-lg shadow-cyan-400/20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Unduh Dataset (CSV)
+            </a>
+            
+        </div>
 
     </div>
 

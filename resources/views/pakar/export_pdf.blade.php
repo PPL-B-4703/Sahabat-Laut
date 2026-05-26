@@ -17,7 +17,7 @@
 <body>
     <div class="header">
         <h2>Rekap Data Validasi Biota Laut</h2>
-        <p>Diekspor oleh : <strong>Pakar Sahabat Laut</strong> | Tanggal Unduh: {{ date('d/m/Y') }}</p>
+        <p>Diekspor oleh: <strong>{{ $userSkarang->first_name ?? 'Pengguna' }} {{ $userSkarang->last_name ?? '' }}</strong> | Tanggal Unduh: {{ date('d/m/Y') }}</p>
     </div>
 
     <table>

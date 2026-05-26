@@ -114,7 +114,7 @@ class PakarController extends Controller
 
     public function generateDataset()
     {
-        $laporan = \App\Models\Laporan::all(); // Narik semua data buat riset pakar
+        $laporan = \App\Models\Laporan::all();
         $csvFileName = 'Dataset_Biota_Laut_Pakar_' . date('Ymd') . '.csv';
         $headers = [
             "Content-type"        => "text/csv",
@@ -127,19 +127,15 @@ class PakarController extends Controller
         $callback = function() use($laporan) {
             $file = fopen('php://output', 'w');
             
-            // Header CSV disesuaikan dengan standar open data
             fputcsv($file, ['ID_Laporan', 'Tanggal_Temuan', 'Spesies', 'Aktivitas', 'Lokasi_Spesifik', 'Provinsi', 'Status_Validasi', 'Deskripsi_Temuan']);
 
             foreach ($laporan as $row) {
-                // Logic aman buat misahin Lokasi dan Provinsi
                 $alamatOri = $row->alamat_lokasi ?? '';
                 $alamatArray = explode(', Provinsi ', $alamatOri);
                 
                 $lokasiBersih = trim($alamatArray[0]);
-                // Kalau $row->prov kosong, ambil dari potongan alamat. Kalau masih kosong juga, kasih '-'
                 $provinsi = !empty($row->prov) ? $row->prov : (isset($alamatArray[1]) ? trim($alamatArray[1]) : '-');
                 
-                // Rapihin format tanggal
                 $tanggal = is_object($row->tanggal_temuan) ? $row->tanggal_temuan->format('Y-m-d') : $row->tanggal_temuan;
 
                 fputcsv($file, [
@@ -148,7 +144,7 @@ class PakarController extends Controller
                     $row->species, 
                     $row->aktivitas, 
                     $lokasiBersih, 
-                    strtoupper($provinsi), // Dibikin huruf kapital semua biar seragam 
+                    strtoupper($provinsi),
                     $row->status, 
                     $row->deskripsi_temuan
                 ]);
@@ -157,5 +153,23 @@ class PakarController extends Controller
         };
 
         return \Illuminate\Support\Facades\Response::stream($callback, 200, $headers);
+            }
+        
+    public function bulkVerify(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'koreksi' => 'nullable|string'
+        ]);
+
+        \App\Models\Laporan::whereIn('id', $request->ids)->update([
+            'status' => 'Terverifikasi',
+            'koreksi' => $request->koreksi
+        ]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Mantap! ' . count($request->ids) . ' laporan berhasil diverifikasi.'
+        ]);
     }
 }
