@@ -19,12 +19,14 @@
                     Sahabat Laut
                 </div>
                 <div class="hidden md:flex gap-16">
-                    <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Beranda</a>
-                    <a href="#" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Katalog</a>
+                    <a href="{{ route('katalog.index') }}" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Beranda</a>
+                    <a href="{{ route('katalog.index') }}" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Katalog</a>
+                    <a href="{{ route('regulasi') }}" class="text-white hover:text-cyan-200 px-4 py-2 border border-white/30 rounded-lg">Regulasi</a>
+                    <a href="{{ route('faq.index') }}" class="text-white hover:text-cyan-200 font-medium transition drop-shadow-md px-4 py-2 border border-white/30 rounded-lg hover:border-cyan-200">Pusat Bantuan</a>
                 </div>
                 <div class="flex items-center gap-4">
                     <button class="md:hidden text-white drop-shadow-md">☰</button>
-                    <a href="/login" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-white/90 font-medium transition">
+                    <a href="{{ route('login') }}" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-white/90 font-medium transition">
                         Login
                     </a>
                 </div>

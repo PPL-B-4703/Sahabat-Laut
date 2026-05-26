@@ -14,6 +14,8 @@ class Laporan extends Model
     protected $casts = [
         'attachments' => 'array', 
         'tanggal_temuan' => 'date',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     public function user()
