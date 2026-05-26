@@ -38,7 +38,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showAdminDashboard'])->name('admin.dashboard');
         Route::resource('users', UserController::class, ['as' => 'admin']);
-
         Route::resource('berita', BeritaController::class, ['as' => 'admin']);
     });
 
