@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
+use App\Models\User; 
+use App\Notifications\LaporanBaruNotification; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Notification; 
 class LaporanController extends Controller
 {
     public function create()
@@ -41,19 +42,13 @@ class LaporanController extends Controller
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                
-                /* 
-                 * PERBAIKAN UTAMA:
-                 * Masukkan ke public_path('storage/laporan')
-                 * File akan langsung masuk secara fisik ke: public/storage/laporan/
-                 */
                 $file->move(public_path('storage/laporan'), $name); 
                 
                 $fileNames[] = $name;
             }
         }
 
-        Laporan::create([
+        $laporan = Laporan::create([
             'user_id'          => Auth::id(),
             'species'          => $species,
             'tanggal_temuan'   => $request->tanggal_temuan,
@@ -67,7 +62,16 @@ class LaporanController extends Controller
             'status'           => 'Menunggu Verifikasi', 
         ]);
 
-        return redirect()->route('laporan.history')->with('success', 'Laporan berhasil terkirim!');
+        $userMasyarakat = Auth::user();
+        $userMasyarakat->notify(new LaporanBaruNotification($laporan, 'untuk_masyarakat'));
+
+        $allPakar = User::where('role', 'pakar')->get(); 
+        Notification::send($allPakar, new LaporanBaruNotification($laporan, 'untuk_pakar'));
+
+        return redirect()->route('laporan.history')->with([
+            'success' => 'Laporan berhasil terkirim!',
+            'notify_pakar' => 'Notifikasi baru telah diteruskan ke tim pakar untuk divalidasi.'
+        ]);
     }
 
     public function index()

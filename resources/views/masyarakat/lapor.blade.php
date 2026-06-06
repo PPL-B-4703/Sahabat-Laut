@@ -84,10 +84,18 @@
         #map { height: 400px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); z-index: 10; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
-<body class="overflow-x-hidden min-h-screen">
+<body class="overflow-x-hidden min-h-screen" x-data="laporanManager()">
 
     @if(session('success'))
-        <script>Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", timer: 3000, showConfirmButton: false });</script>
+        <script>
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Laporan Diterima!', 
+                text: "{{ session('success') }}. {{ session('notify_pakar') }}", 
+                confirmButtonColor: '#004d6b',
+                confirmButtonText: 'Buka Riwayat Laporan'
+            });
+        </script>
     @endif
 
     <div class="relative w-full min-h-screen">
@@ -140,7 +148,7 @@
                 </form>
             </aside>
 
-            <main class="flex-1" x-data="laporanManager()">
+            <main class="flex-1">
                 <form action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
