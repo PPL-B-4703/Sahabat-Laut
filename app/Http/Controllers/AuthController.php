@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -102,7 +104,36 @@ class AuthController extends Controller
 
     public function showMasyarakatDashboard() 
     {
-        return view('masyarakat.dashboard', ['user' => Auth::user()]);
+        $user = Auth::user();
+
+        // 1. Ambil Laporan Terakhir untuk fitur Tracking Status
+        $laporanTerakhir = Laporan::where('user_id', $user->id)
+                                  ->latest()
+                                  ->first();
+
+        // 2. Hitung Laporan yang dikirim user HARI INI
+        $laporanHarian = Laporan::where('user_id', $user->id)
+                                ->whereDate('created_at', Carbon::today())
+                                ->count();
+
+        // 3. Ambil 3 data laporan tervalidasi terbaru untuk Tabel Preview
+        $laporanValid = Laporan::where('status', 'Terverifikasi')
+                               ->latest()
+                               ->take(3)
+                               ->get()
+                               ->map(function ($item) {
+                                   $provinsi = 'Lainnya';
+                                   if (str_contains($item->alamat_lokasi, ', Provinsi ')) {
+                                       $provinsi = explode(', Provinsi ', $item->alamat_lokasi)[1];
+                                   }
+                                   return [
+                                       'tanggal' => Carbon::parse($item->tanggal_temuan)->translatedFormat('d M Y'),
+                                       'spesies' => $item->species,
+                                       'provinsi' => $provinsi,
+                                   ];
+                               });
+
+        return view('masyarakat.dashboard', compact('user', 'laporanTerakhir', 'laporanHarian', 'laporanValid'));
     }
 
     protected function redirectBasedOnRole(string $role)
