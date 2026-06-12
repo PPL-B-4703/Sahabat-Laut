@@ -95,23 +95,6 @@
         </section>
     </div>
 
-
-    <section x-data="{ openLightbox: false }" class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-bold text-gray-900 mb-8">Sorotan Biota</h2>
-            
-            <div @click="openLightbox = true" class="relative group cursor-pointer inline-block overflow-hidden rounded-2xl shadow-lg border-4 border-white">
-                <img src="{{ asset('images/biota/penyu.jpg') }}" alt="Gambar Penyu" class="w-full max-w-md h-auto object-cover transform transition duration-500 group-hover:scale-105">
-                
-                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span class="text-white font-semibold flex items-center gap-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Perbesar Gambar
-                    </span>
-                </div>
-            </div>
-        </div>
-
         <div x-show="openLightbox" 
              x-cloak
              x-transition.opacity.duration.300ms
