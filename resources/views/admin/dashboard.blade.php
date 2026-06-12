@@ -141,41 +141,6 @@
             @endif
         </div>
 
-        <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- User Management -->
-            <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-blue-600 transition-colors">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-white mb-2">Manajemen User</h3>
-                        <p class="text-slate-400 text-sm">Kelola user dan role dalam sistem</p>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M15 19H9a6 6 0 016-6h0a6 6 0 016 6v1H9v-1a4 4 0 00-8 0v1H0" />
-                    </svg>
-                </div>
-                <a href="{{ route('admin.users.index') }}" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                    Buka Manajemen User
-                </a>
-            </div>
-
-            <!-- Upcoming Features -->
-            <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-slate-600 transition-colors">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-400 mb-2">Manajemen Pakar</h3>
-                        <p class="text-slate-500 text-sm">Kelola data pakar melalui user management</p>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                </div>
-                <a href="{{ route('admin.users.index') }}" class="inline-block px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-lg transition-colors">
-                    Kelola di User Management
-                </a>
-            </div>
-        </div>
-
         <!-- Info Section -->
         <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
             <h3 class="text-lg font-bold text-white mb-4">ℹ️ Informasi Sistem</h3>
