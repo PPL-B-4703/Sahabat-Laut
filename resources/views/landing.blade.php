@@ -139,19 +139,58 @@
 
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-gray-900 mb-12">
-                Berita Terbaru
-            </h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-lg shadow p-6 h-64 flex items-center justify-center">
-                    <p class="text-gray-400 text-center">Berita akan ditampilkan di sini</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 h-64 flex items-center justify-center">
-                    <p class="text-gray-400 text-center">Berita akan ditampilkan di sini</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-6 h-64 flex items-center justify-center">
-                    <p class="text-gray-400 text-center">Berita akan ditampilkan di sini</p>
-                </div>
+            
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-900">
+                    Berita Terbaru
+                </h2>
+                <a href="{{ route('user.berita.index') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-500 flex items-center gap-1 transition-colors group">
+                    Lihat Semua Berita <span class="transform group-hover:translate-x-1 transition-transform"></span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @forelse($beritas as $item)
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 flex flex-col hover:shadow-lg transition-all duration-300">
+                        
+                        <div class="h-48 w-full bg-gray-200 overflow-hidden relative">
+                            @if($item->gambar)
+                                <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="p-6 flex flex-col flex-grow text-left">
+                            <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                                <span>Oleh: <strong class="text-gray-700">{{ $item->penulis }}</strong></span>
+                                <span>•</span>
+                                <span>{{ \Carbon\Carbon::parse($item->tanggal_publikasi)->format('d M Y') }}</span>
+                            </div>
+
+                            <h3 class="font-bold text-lg text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors mb-2">
+                                <a href="{{ route('user.berita.show', $item->id) }}">{{ $item->judul }}</a>
+                            </h3>
+                            
+                            <p class="text-sm text-gray-600 line-clamp-3 flex-grow mb-4">
+                                {{ strip_tags($item->isi) }}
+                            </p>
+
+                            <div class="pt-4 border-t border-gray-100 mt-auto">
+                                <a href="{{ route('user.berita.show', $item->id) }}" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1">
+                                    Baca Selengkapnya
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-1 md:col-span-3 bg-white rounded-lg shadow p-12 text-center flex flex-col items-center justify-center border border-gray-200">
+                        <p class="text-gray-400 font-medium">Belum ada data berita terbaru saat ini.</p>
+                        <p class="text-xs text-gray-400 mt-1">Gunakan akun admin untuk menginput publikasi berita baru.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
     </section>
