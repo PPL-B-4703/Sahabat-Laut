@@ -41,18 +41,23 @@
 
     <div class="space-x-8 text-sm font-medium">
         <a href="/"
-           class="text-white/70 hover:text-white transition">
+            class="text-white/70 hover:text-white transition">
             Beranda
         </a>
 
         <a href="/katalog"
-           class="text-white/70 hover:text-white transition">
+            class="text-white/70 hover:text-white transition">
             Katalog
         </a>
 
         <a href="/regulasi"
-           class="text-cyan-400 font-bold">
+            class="text-cyan-400 font-bold">
             Regulasi
+        </a>
+
+        <a href="{{ route('faq.index') }}"
+            class="text-white/70 hover:text-white transition">
+            Pusat Bantuan
         </a>
     </div>
 

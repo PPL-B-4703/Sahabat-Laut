@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
+use App\Models\User; 
+use App\Notifications\LaporanBaruNotification; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Notification; 
 class LaporanController extends Controller
 {
     public function create()
@@ -34,19 +35,20 @@ class LaporanController extends Controller
         $species = ($request->species_category === 'Lainnya') 
                     ? $request->species_other 
                     : $request->species_category;
+        
         $alamatLengkap = "{$request->alamat_detail}, Provinsi {$request->provinsi}";
+        
         $fileNames = [];
         if ($request->hasFile('attachments')) {
-        foreach ($request->file('attachments') as $file) {
-            $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            $file->storeAs('laporan', $name, 'public'); 
-            
-            $fileNames[] = $name;
+            foreach ($request->file('attachments') as $file) {
+                $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/laporan'), $name); 
+                
+                $fileNames[] = $name;
+            }
         }
-    }
 
-        Laporan::create([
+        $laporan = Laporan::create([
             'user_id'          => Auth::id(),
             'species'          => $species,
             'tanggal_temuan'   => $request->tanggal_temuan,
@@ -60,16 +62,26 @@ class LaporanController extends Controller
             'status'           => 'Menunggu Verifikasi', 
         ]);
 
-        return redirect()->route('laporan.history')->with('success', 'Laporan berhasil terkirim!');
+        $userMasyarakat = Auth::user();
+        $userMasyarakat->notify(new LaporanBaruNotification($laporan, 'untuk_masyarakat'));
+
+        $allPakar = User::where('role', 'pakar')->get(); 
+        Notification::send($allPakar, new LaporanBaruNotification($laporan, 'untuk_pakar'));
+
+        return redirect()->route('laporan.history')->with([
+            'success' => 'Laporan berhasil terkirim!',
+            'notify_pakar' => 'Notifikasi baru telah diteruskan ke tim pakar untuk divalidasi.'
+        ]);
     }
 
     public function index()
     {
         $user = Auth::user();
-        $laporans = Laporan::where('user_id', $user->id)->latest()->get();
+        $laporans = Laporan::where('user_id', auth()->id())->latest()->get();
 
         return view('masyarakat.history', compact('user', 'laporans'));
     }
+
     public function show(int $id)
     {
         $user = Auth::user();

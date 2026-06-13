@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('deskripsi_lokasi');
             $table->json('attachments')->nullable(); 
             $table->enum('status', ['Menunggu Verifikasi', 'Terverifikasi', 'Ditolak'])->default('Menunggu Verifikasi');
+            $table->text('koreksi')->nullable();
             $table->timestamps();
         });
     }
