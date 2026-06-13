@@ -12,7 +12,7 @@
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-white overflow-hidden min-h-screen">
+<body class="bg-white overflow-x-hidden min-h-screen">
 
     <div class="flex min-h-screen w-full">
         
@@ -40,31 +40,44 @@
                     </p>
                 </div>
 
+                @if ($errors->any())
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative">
+                        <strong class="font-bold text-sm block mb-1">Whoops! Ada masalah:</strong>
+                        <ul class="list-disc list-inside text-xs">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('register') }}" method="POST" class="flex flex-col gap-6 w-full">
                     @csrf
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center">
+                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center @error('first_name') border-red-500 @enderror">
                             <label class="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-[#1c1b1f]">First Name</label>
-                            <input type="text" name="first_name" required placeholder="John" 
+                            <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="John" 
                                 class="w-full bg-transparent outline-none text-base text-[#1c1b1f] pt-1 placeholder:text-gray-300">
                         </div>
-                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center">
+                        
+                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center @error('last_name') border-red-500 @enderror">
                             <label class="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-[#1c1b1f]">Last Name</label>
-                            <input type="text" name="last_name" placeholder="Doe" 
+                            <input type="text" name="last_name" value="{{ old('last_name') }}" placeholder="Doe" 
                                 class="w-full bg-transparent outline-none text-base text-[#1c1b1f] pt-1 placeholder:text-gray-300">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center">
+                        <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center @error('email') border-red-500 @enderror">
                             <label class="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-[#1c1b1f]">Email</label>
-                            <input type="email" name="email" required placeholder="example@mail.com" 
+                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="example@mail.com" 
                                 class="w-full bg-transparent outline-none text-base text-[#1c1b1f] pt-1 placeholder:text-gray-300">
                         </div>
+                        
                         <div class="relative h-14 bg-white rounded-lg border border-[#79747e] px-4 flex items-center">
                             <label class="absolute -top-2.5 left-3 bg-white px-1 text-xs font-medium text-[#1c1b1f]">Phone Number</label>
-                            <input type="tel" name="phone_number" placeholder="081234..." 
+                            <input type="tel" name="phone_number" value="{{ old('phone_number') }}" placeholder="081234..." 
                                 class="w-full bg-transparent outline-none text-base text-[#1c1b1f] pt-1 placeholder:text-gray-300">
                         </div>
                     </div>

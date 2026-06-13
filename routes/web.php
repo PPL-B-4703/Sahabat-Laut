@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\PakarController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KatalogController;
+use App\Http\Controllers\LaporanController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -23,7 +25,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:masyarakat')->prefix('masyarakat')->group(function () {
         Route::get('/dashboard', [AuthController::class, 'showMasyarakatDashboard'])->name('dashboard');
+        Route::get('/lapor', [LaporanController::class, 'create'])->name('laporan.create');
+        Route::post('/lapor', [LaporanController::class, 'store'])->name('laporan.store');
+        Route::get('/riwayat', [LaporanController::class, 'index'])->name('laporan.history');
+        Route::get('/lapor/{id}', [LaporanController::class, 'show'])->name('laporan.show');
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::prefix('pakar')->group(function () {
+    Route::get('/dashboard', [PakarController::class, 'dashboard'])->name('pakar.dashboard');
+    Route::get('/validasi', [PakarController::class, 'index'])->name('pakar.validasi');
+    Route::get('/validasi/{id}', [PakarController::class, 'show'])->name('pakar.detail');
+    Route::post('/validasi/{id}/submit', [PakarController::class, 'update'])->name('pakar.submit');
 });
