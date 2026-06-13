@@ -14,7 +14,6 @@ class KatalogController extends Controller
     {
         $query = Biota::query();
 
-        // 🔍 SEARCH (nama, ilmiah, kategori)
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nama_biota', 'like', '%' . $request->search . '%')
@@ -23,16 +22,14 @@ class KatalogController extends Controller
             });
         }
 
-        // 🎯 FILTER KATEGORI
         if ($request->filled('kategori')) {
             $query->where('kategori', $request->kategori);
         }
 
-        // 📊 AMBIL SEMUA DATA (tanpa pagination)
         $biotas = $query->orderBy('nama_biota')->get();
 
-        // 📂 LIST KATEGORI (buat filter button)
         $kategoris = Biota::select('kategori')
+            ->whereNotNull('kategori')
             ->distinct()
             ->orderBy('kategori')
             ->pluck('kategori');
@@ -40,7 +37,6 @@ class KatalogController extends Controller
         return view('katalog.index', compact('biotas', 'kategoris'));
     }
 
-    // 🔥 PAKE ROUTE MODEL BINDING (LEBIH BERSIH)
     public function show(Biota $biota)
     {
         // 🔗 SPESIES TERKAIT (kategori sama, bukan dirinya)
