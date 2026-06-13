@@ -75,12 +75,6 @@
                 <img src="{{ asset('images/logo.png') }}" class="w-12 h-12 object-contain mix-blend-multiply" alt="Logo">
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
-            
-            <nav class="hidden md:flex gap-10">
-                <a href="{{ route('dashboard') }}" class="text-white/80 font-medium hover:text-white pb-1 transition-all">Beranda</a>
-                <a href="#" class="text-white/80 font-medium hover:text-white pb-1 transition-all">Katalog</a>
-            </nav>
-
             <div class="flex items-center gap-8">
                 <a href="{{ route('masyarakat.profil.edit') }}" class="flex items-center gap-3 glass-card hover:bg-white/20 transition-all p-1 pr-4 rounded-full cursor-pointer">
                     <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden shadow-lg">

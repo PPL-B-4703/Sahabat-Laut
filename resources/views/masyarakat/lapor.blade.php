@@ -106,12 +106,58 @@
                 <h1 class="font-['Work_Sans'] font-semibold text-white text-3xl tracking-tight glass-text">Sahabat Laut</h1>
             </div>
 
-            <nav class="hidden md:flex gap-10">
-                <a href="{{ route('dashboard') }}" class="text-white/80 font-medium hover:text-white pb-1 transition-all">Beranda</a>
-                <a href="#" class="text-white/80 font-medium hover:text-white pb-1 transition-all">Katalog</a>
-            </nav>
-
             <div class="flex items-center gap-8">
+                
+                <div class="relative" 
+                     x-data="{ 
+                        openNotif: false,
+                        count: {{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }},
+                        markAsRead() {
+                            this.openNotif = !this.openNotif;
+                            if (this.openNotif && this.count > 0) {
+                                this.count = 0; // Reset bubble count secara instan di frontend
+                                fetch('{{ route("notifications.markAsRead") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                }).catch(err => console.error('Gagal memperbarui status notifikasi:', err));
+                            }
+                        }
+                     }">
+                    <button @click="markAsRead()" class="relative p-2 text-white bg-white/10 border border-white/20 rounded-full hover:bg-white/20 transition-all focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        
+                        <template x-if="count > 0">
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full animate-bounce" x-text="count">
+                            </span>
+                        </template>
+                    </button>
+
+                    <div x-show="openNotif" @click.away="openNotif = false" x-transition x-cloak
+                         class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 z-[110]">
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-800 text-sm">Notifikasi Terbaru</span>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto">
+                            @forelse(auth()->user()->unreadNotifications as $notification)
+                                <a href="{{ route('laporan.show', $notification->data['laporan_id'] ?? 1) }}" class="block px-4 py-3 hover:bg-blue-50/50 border-b border-gray-50 transition-all">
+                                    <p class="text-xs font-bold text-blue-600 mb-0.5">{{ $notification->data['title'] }}</p>
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $notification->data['message'] }}</p>
+                                    <span class="text-[10px] text-gray-400 block mt-1">{{ $notification->created_at->diffForHumans() }}</span>
+                                </a>
+                            @empty
+                                <div class="px-4 py-8 text-center text-gray-400 text-xs italic">
+                                    Tidak ada pemberitahuan baru.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{{ route('masyarakat.profil.edit') }}" class="flex items-center gap-3 glass-card hover:bg-white/20 transition-all p-1 pr-4 rounded-full cursor-pointer">
                     <div class="w-10 h-10 rounded-full border-2 border-white bg-white overflow-hidden shadow-lg">
                         <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->first_name . ' ' . $user->last_name).'&background=random' }}" alt="Profile" class="w-full h-full object-cover">
