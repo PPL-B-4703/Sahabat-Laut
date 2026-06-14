@@ -29,7 +29,7 @@ class BiotaSeeder extends Seeder
                 'kategori' => $row[0],
                 'habitat' => 'Perairan Indonesia',
                 'status_konservasi' => $row[3],
-                'deskripsi' => $row[5],
+                'deskripsi' => $row[4],
                 'fakta_menarik' => $row[5],
                 'lokasi' => $row[6],
                 'gambar_url' => $row[7],
