@@ -10,6 +10,7 @@ use App\Http\Controllers\PakarController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PakarBiotaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/beranda', [LandingPageController::class, 'index'])->name('landing');
@@ -68,4 +69,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::prefix('pakar')->name('pakar.')->group(function () {
+
+    Route::resource('biota', PakarBiotaController::class);
+
 });
