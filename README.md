@@ -92,9 +92,3 @@ Spreadsheet tersebut berisi daftar test case, status pelaksanaan, dan hasil veri
 - Branch ini tidak otomatis menjadi branch produksi.
 - Hasil eksperimen dan kode sementara di `Testing` harus diverifikasi sebelum digabungkan ke `main`.
 - README di branch ini tidak mengubah fungsionalitas runtime, tetapi membantu tim memahami tujuan uji.
-
-## 7. Rekomendasi Dokumentasi
-
-- Jika branch `Testing` memiliki fitur khusus baru, tambahkan bagian di README ini yang menjelaskan fitur tersebut.
-- Jika ada konfigurasi testing baru atau perintah khusus, catat di sini.
-- Gunakan branch ini untuk menyimpan best practice pengujian sebelum finalisasi ke `main`.
