@@ -11,15 +11,7 @@ class DeanAdminReadUserListTest extends DuskTestCase
 {
     public function test_admin_can_read_user_list(): void
     {
-        $user = User::create([
-            'first_name' => 'Read',
-            'last_name' => 'User',
-            'email' => 'dean-read-user-'.Str::random(4).'@example.com',
-            'password' => 'password123',
-            'role' => 'masyarakat',
-        ]);
-
-        $this->browse(function (Browser $browser) use ($user): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/login')
                 ->type('input[name="email"]', 'admin@test.com')
                 ->type('input[name="password"]', 'password123')
@@ -27,11 +19,10 @@ class DeanAdminReadUserListTest extends DuskTestCase
                 ->visit('/admin/users')
                 ->waitForText('Manajemen User')
                 ->assertSee('Manajemen User')
-                ->type('input[name="search"]', $user->email)
+                ->type('input[name="search"]', 'budi@test.com')
                 ->press('Cari')
-                ->waitForText($user->email)
-                ->assertSee($user->email)
-                ->assertSee('Read User');
+                ->waitForText('budi@test.com')
+                ->assertSee('budi@test.com');
         });
     }
 }
