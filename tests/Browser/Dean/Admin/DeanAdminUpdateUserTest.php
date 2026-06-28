@@ -3,7 +3,6 @@
 namespace Tests\Browser\Dean\Admin;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
