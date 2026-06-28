@@ -33,25 +33,20 @@ abstract class DuskTestCase extends BaseTestCase
             '--disable-smooth-scrolling',
             '--no-sandbox',
             '--disable-dev-shm-usage',
-            '--remote-allow-origins=*',
-            '--disable-gpu', // Taruh di sini agar selalu aktif
-            '--disable-software-rasterizer', // Opsional: bantu meredam error video/gl device lainnya
+            '--disable-gpu',
         ])->unless($this->hasHeadlessDisabled(), function (Collection $items) {
             return $items->merge([
                 '--headless=new',
             ]);
         })->all());
 
-        $chromeBinary = static::resolveChromeBinary();
-        if ($chromeBinary) {
-            $options->setBinary($chromeBinary);
-        }
-
-        return RemoteWebDriver::create(
+       return RemoteWebDriver::create(
             $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:9515',
             DesiredCapabilities::chrome()->setCapability(
                 ChromeOptions::CAPABILITY, $options
-            )
+            ),
+            60000,  // ← tambah ini (60 detik connection timeout)
+            60000   // ← dan ini (60 detik request timeout)
         );
     }
 
