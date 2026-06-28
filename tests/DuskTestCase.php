@@ -38,17 +38,8 @@ abstract class DuskTestCase extends BaseTestCase
             ]);
         })->all());
 
-        $options->setExperimentalOption('prefs', [
-            'download.default_directory' => base_path('tests/Browser/downloads'),
-            'download.prompt_for_download' => false,
-            'download.directory_upgrade' => true,
-            'safebrowsing.enabled' => true,
-        ]);
-
-        $options->setBinary('/Applications/Brave Browser.app/Contents/MacOS/Brave Browser');
-
         return RemoteWebDriver::create(
-            $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:57431',
+            $_ENV['DUSK_DRIVER_URL'] ?? env('DUSK_DRIVER_URL') ?? 'http://localhost:9515',
             DesiredCapabilities::chrome()->setCapability(
                 ChromeOptions::CAPABILITY, $options
             )
