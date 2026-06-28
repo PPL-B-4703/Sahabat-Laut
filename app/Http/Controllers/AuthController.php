@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -75,17 +77,66 @@ class AuthController extends Controller
         return view('admin.dashboard', ['user' => Auth::user()]); 
     }
 
-    public function showPakarDashboard() 
-    { 
-        return view('pakar.dashboard', ['user' => Auth::user()]); 
+    public function showPakarDashboard()
+    {
+        $totalLaporan = \App\Models\Laporan::count();
+        $laporanMenunggu = \App\Models\Laporan::where('status', 'Menunggu Verifikasi')->count();
+        $laporanSelesai = \App\Models\Laporan::whereIn('status', ['Terverifikasi', 'Ditolak'])->count();
+        $recentReports = \App\Models\Laporan::latest()->take(5)->get();
+        $semuaLaporan = \App\Models\Laporan::select('alamat_lokasi')->get();
+        
+        $provinsiCounts = $semuaLaporan->map(function ($laporan) {
+            $parts = explode(', Provinsi ', $laporan->alamat_lokasi);
+            return $parts[1] ?? 'Lainnya'; 
+        })->countBy();
+
+        return view('pakar.dashboard', [
+            'user' => \Illuminate\Support\Facades\Auth::user(),
+            'totalLaporan' => $totalLaporan,
+            'laporanMenunggu' => $laporanMenunggu,
+            'laporanDiproses' => $laporanSelesai,
+            'recentReports' => $recentReports,
+            
+            'chartLabels' => $provinsiCounts->keys(),
+            'chartValues' => $provinsiCounts->values(),
+        ]);
     }
 
     public function showMasyarakatDashboard() 
     {
-        return view('masyarakat.dashboard', ['user' => Auth::user()]);
+        $user = Auth::user();
+
+        // 1. Ambil Laporan Terakhir untuk fitur Tracking Status
+        $laporanTerakhir = Laporan::where('user_id', $user->id)
+                                  ->latest()
+                                  ->first();
+
+        // 2. Hitung Laporan yang dikirim user HARI INI
+        $laporanHarian = Laporan::where('user_id', $user->id)
+                                ->whereDate('created_at', Carbon::today())
+                                ->count();
+
+        // 3. Ambil 3 data laporan tervalidasi terbaru untuk Tabel Preview
+        $laporanValid = Laporan::where('status', 'Terverifikasi')
+                               ->latest()
+                               ->take(3)
+                               ->get()
+                               ->map(function ($item) {
+                                   $provinsi = 'Lainnya';
+                                   if (str_contains($item->alamat_lokasi, ', Provinsi ')) {
+                                       $provinsi = explode(', Provinsi ', $item->alamat_lokasi)[1];
+                                   }
+                                   return [
+                                       'tanggal' => Carbon::parse($item->tanggal_temuan)->translatedFormat('d M Y'),
+                                       'spesies' => $item->species,
+                                       'provinsi' => $provinsi,
+                                   ];
+                               });
+
+        return view('masyarakat.dashboard', compact('user', 'laporanTerakhir', 'laporanHarian', 'laporanValid'));
     }
 
-    protected function redirectBasedOnRole($role)
+    protected function redirectBasedOnRole(string $role)
     {
         return match($role) {
             'admin'      => redirect()->route('admin.dashboard'),
