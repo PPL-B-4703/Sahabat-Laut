@@ -11,17 +11,9 @@ class DeanLandingPageTest extends DuskTestCase
 {
     public function test_masyarakat_can_login_and_access_beranda(): void
     {
-        $user = User::create([
-            'first_name' => 'Dean',
-            'last_name' => 'Masyarakat',
-            'email' => 'dean-masyarakat-'.Str::random(4).'@example.com',
-            'password' => 'password123',
-            'role' => 'masyarakat',
-        ]);
-
-        $this->browse(function (Browser $browser) use ($user): void {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/login')
-                ->type('input[name="email"]', $user->email)
+                ->type('input[name="email"]', 'budi@test.com')
                 ->type('input[name="password"]', 'password123')
                 ->press('Masuk Sekarang')
                 ->assertPathBeginsWith('/masyarakat')

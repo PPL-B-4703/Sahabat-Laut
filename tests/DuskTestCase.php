@@ -34,9 +34,10 @@ abstract class DuskTestCase extends BaseTestCase
             '--no-sandbox',
             '--disable-dev-shm-usage',
             '--remote-allow-origins=*',
+            '--disable-gpu', // Taruh di sini agar selalu aktif
+            '--disable-software-rasterizer', // Opsional: bantu meredam error video/gl device lainnya
         ])->unless($this->hasHeadlessDisabled(), function (Collection $items) {
             return $items->merge([
-                '--disable-gpu',
                 '--headless=new',
             ]);
         })->all());

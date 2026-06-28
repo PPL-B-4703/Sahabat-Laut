@@ -11,14 +11,6 @@ class DeanAdminDeleteUserTest extends DuskTestCase
 {
     public function test_admin_can_delete_user(): void
     {
-        $admin = User::create([
-            'first_name' => 'Dean',
-            'last_name' => 'Admin',
-            'email' => 'dean-admin-delete-'.Str::random(4).'@example.com',
-            'password' => 'password123',
-            'role' => 'admin',
-        ]);
-
         $user = User::create([
             'first_name' => 'Delete',
             'last_name' => 'User',
@@ -27,18 +19,23 @@ class DeanAdminDeleteUserTest extends DuskTestCase
             'role' => 'masyarakat',
         ]);
 
-        $this->browse(function (Browser $browser) use ($admin, $user): void {
+        $this->browse(function (Browser $browser) use ($user): void {
             $browser->visit('/login')
-                ->type('input[name="email"]', $admin->email)
+                ->type('input[name="email"]', 'admin@test.com')
                 ->type('input[name="password"]', 'password123')
                 ->press('Masuk Sekarang')
                 ->visit('/admin/users')
+                ->waitForText('Manajemen User')
                 ->assertSee($user->email)
                 ->click("form[action='/admin/users/{$user->id}'] button[type='submit']")
                 ->acceptDialog()
+                ->waitForText('User berhasil dihapus!')
                 ->assertPathIs('/admin/users')
                 ->assertSee('User berhasil dihapus!')
-                ->assertDontSee($user->email);
+                ->type('input[name="search"]', $user->email)
+                ->press('Cari')
+                ->waitForText('Belum ada user dalam sistem')
+                ->assertSee('Belum ada user dalam sistem');
         });
     }
 }
