@@ -7,6 +7,7 @@
 Branch `Testing` dibuat untuk memisahkan kode pengembangan dan eksperimen dari branch `main` yang lebih stabil.
 
 Fokus utama branch ini:
+
 - mengembangkan fitur baru tanpa memengaruhi produksi,
 - menguji skenario dan alur validasi laporan,
 - mengevaluasi integrasi frontend-backend,
@@ -35,28 +36,28 @@ Branch ini umumnya memerhatikan beberapa area berikut:
 Langkah yang sama seperti setup di branch `main`, dengan tambahan perhatian pada data test:
 
 1. Pastikan berada di branch `Testing`:
-   ```bash
-   git checkout Testing
-   ```
+    ```bash
+    git checkout Testing
+    ```
 2. Install dependensi jika belum:
-   ```bash
-   composer install
-   npm install
-   ```
+    ```bash
+    composer install
+    npm install
+    ```
 3. Siapkan file `.env` dan konfigurasi database khusus testing jika diperlukan.
 4. Jalankan migrasi dan seed data:
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
 5. Buat symbolic link storage jika belum:
-   ```bash
-   php artisan storage:link
-   ```
+    ```bash
+    php artisan storage:link
+    ```
 6. Jalankan server lokal:
-   ```bash
-   php artisan serve
-   npm run dev
-   ```
+    ```bash
+    php artisan serve
+    npm run dev
+    ```
 
 > Jika ingin menggunakan database khusus untuk testing, gunakan pengaturan terpisah di `.env.testing` dan jalankan perintah yang sesuai.
 
