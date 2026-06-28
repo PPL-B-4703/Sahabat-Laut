@@ -49,4 +49,35 @@ abstract class DuskTestCase extends BaseTestCase
             60000   // ← dan ini (60 detik request timeout)
         );
     }
+
+    protected static function resolveChromeBinary(): ?string
+    {
+        $candidates = array_filter([
+            getenv('CHROME_BIN'),
+            getenv('DUSK_CHROME_BINARY'),
+            'C:\Program Files\Google\Chrome\Application\chrome.exe',
+            'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+            'C:\Program Files\Chromium\Application\chrome.exe',
+        ]);
+
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) && file_exists($candidate)) {
+                return $candidate;
+            }
+        }
+
+        $output = [];
+        @exec('where.exe chrome 2>nul', $output, $exitCode);
+
+        if ($exitCode === 0) {
+            foreach ($output as $line) {
+                $line = trim($line);
+                if ($line !== '' && str_contains($line, 'chrome.exe')) {
+                    return $line;
+                }
+            }
+        }
+
+        return null;
+    }
 }
