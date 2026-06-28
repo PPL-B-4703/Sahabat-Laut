@@ -1,54 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sahabat Laut - README Branch Testing
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Dokumen ini khusus untuk branch `Testing` dan menjelaskan tujuan, struktur, dan alur kerja pengujian pada branch tersebut.
 
-## 🚀 Panduan Instalasi (Local Setup)
+## 1. Tujuan Branch Testing
 
-Ikuti langkah-langkah di bawah ini setelah melakukan `git clone` untuk menjalankan proyek:
+Branch `Testing` dibuat untuk memisahkan kode pengembangan dan eksperimen dari branch `main` yang lebih stabil.
 
-### 1. Install Library & Package
-Jalankan perintah ini secara berurutan di terminal:
+Fokus utama branch ini:
+- mengembangkan fitur baru tanpa memengaruhi produksi,
+- menguji skenario dan alur validasi laporan,
+- mengevaluasi integrasi frontend-backend,
+- memeriksa stabilitas migrasi dan seed data,
+- mendokumentasikan perubahan pengujian yang berbeda dari branch `main`.
+
+## 2. Perbedaan dengan Branch `main`
+
+- `main` berisi kode yang dianggap stabil dan siap digunakan oleh pengguna akhir.
+- `Testing` berisi percobaan fitur, kode tambahan untuk pengujian, dan dokumentasi khusus pengujian.
+- README di branch `main` bersifat umum dan berorientasi setup aplikasi.
+- README di branch `Testing` ini berorientasi pada proses testing, verifikasi, dan skenario uji.
+
+## 3. Komponen Utama untuk Testing
+
+Branch ini umumnya memerhatikan beberapa area berikut:
+
+- `tests/` — pengujian unit dan fitur Laravel.
+- `database/migrations/` dan `database/seeders/` — memastikan skema data dan seed dapat diverifikasi.
+- `app/Http/Controllers/` — alur validasi laporan, manajemen konten, dan autentikasi.
+- `resources/js/` dan `resources/css/` — pemeriksaan perubahan frontend terhadap tampilan dan fungsi.
+- `routes/web.php` dan `routes/api.php` — memastikan semua rute testing berfungsi.
+
+## 4. Instruksi Setup Lokal untuk Testing
+
+Langkah yang sama seperti setup di branch `main`, dengan tambahan perhatian pada data test:
+
+1. Pastikan berada di branch `Testing`:
+   ```bash
+   git checkout Testing
+   ```
+2. Install dependensi jika belum:
+   ```bash
+   composer install
+   npm install
+   ```
+3. Siapkan file `.env` dan konfigurasi database khusus testing jika diperlukan.
+4. Jalankan migrasi dan seed data:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+5. Buat symbolic link storage jika belum:
+   ```bash
+   php artisan storage:link
+   ```
+6. Jalankan server lokal:
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
+
+> Jika ingin menggunakan database khusus untuk testing, gunakan pengaturan terpisah di `.env.testing` dan jalankan perintah yang sesuai.
+
+## 5. Rencana Pengujian
+
+Pada branch `Testing`, beberapa rencana pengujian yang disarankan:
+
+- uji alur pelaporan mandiri dengan berbagai jenis input dan gambar,
+- uji validasi laporan oleh pakar dengan status laporan yang berubah,
+- verifikasi tampilan katalog biota laut dan filter pencarian,
+- uji notifikasi status laporan kepada pelapor,
+- jalankan pengujian unit/fungsional di direktori `tests/`.
+
+### Contoh perintah pengujian
 
 ```bash
-composer install
-npm install
-npm install -D tailwindcss@^4.0.0
-
-> [!IMPORTANT]
-> Jika muncul file `tailwind.config.js` dan `postcss.config.js` setelah instalasi Tailwind di atas, segera **HAPUS** kedua file tersebut.
-
-### 2. Konfigurasi Storage
-Jika gambar/aset tidak terbaca, hubungkan folder storage dengan perintah:
-
-```bash
-php artisan storage:link
+php artisan test
 ```
 
-### 3. Cara Menjalankan Aplikasi
-Buka **dua terminal** terpisah dan jalankan perintah berikut:
+Jika ada skrip testing tambahan di masa depan, dokumentasikan di file ini atau pada branch `Testing`.
 
-* **Terminal 1 (Backend):**
-    ```bash
-    php artisan serve
-    ```
+## 6. Batasan dan Catatan Khusus Branch Testing
 
-* **Terminal 2 (Frontend):**
-    ```bash
-    npm run build
-    npm run dev
-    ```
+- Branch ini tidak otomatis menjadi branch produksi.
+- Hasil eksperimen dan kode sementara di `Testing` harus diverifikasi sebelum digabungkan ke `main`.
+- README di branch ini tidak mengubah fungsionalitas runtime, tetapi membantu tim memahami tujuan uji.
 
----
+## 7. Rekomendasi Dokumentasi
 
-## 📝 Catatan Tambahan
-- Pastikan konfigurasi `.env` sudah sesuai (DB Connection, dll).
-- Jika ada perubahan pada CSS/JS, pastikan terminal `npm run dev` tetap berjalan.
-
-## License
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-```
+- Jika branch `Testing` memiliki fitur khusus baru, tambahkan bagian di README ini yang menjelaskan fitur tersebut.
+- Jika ada konfigurasi testing baru atau perintah khusus, catat di sini.
+- Gunakan branch ini untuk menyimpan best practice pengujian sebelum finalisasi ke `main`.
