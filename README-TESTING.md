@@ -79,7 +79,18 @@ php artisan test
 
 Jika ada skrip testing tambahan di masa depan, dokumentasikan di file ini atau pada branch `Testing`.
 
-## 6. Batasan dan Catatan Khusus Branch Testing
+## 6. Lampiran SPS Test Case
+
+Dokumentasi test case lengkap tersedia di spreadsheet berikut:
+
+- SPS Test Case: https://docs.google.com/spreadsheets/d/1alVf683kGJs23A1mt88X4zc5sh5AFu_CIrDhOcs28-Q/edit?usp=sharing
+
+Gunakan spreadsheet tersebut untuk melihat:
+- daftar test case yang sudah dijalankan,
+- hasil verifikasi setiap kasus,
+- status bug atau perbaikan yang terkait.
+
+## 7. Batasan dan Catatan Khusus Branch Testing
 
 - Branch ini tidak otomatis menjadi branch produksi.
 - Hasil eksperimen dan kode sementara di `Testing` harus diverifikasi sebelum digabungkan ke `main`.
