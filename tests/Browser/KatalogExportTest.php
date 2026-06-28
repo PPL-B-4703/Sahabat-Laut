@@ -5,7 +5,7 @@ namespace Tests\Browser;
 use App\Models\User;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use PHPUnit\Framework\Attributes\Test; // Tambahkan ini
+use PHPUnit\Framework\Attributes\Test;
 
 class KatalogExportTest extends DuskTestCase
 {

@@ -21,9 +21,8 @@ class PanelVerifikasiTest extends DuskTestCase
                     ->press('Masuk Sekarang')
                     ->pause(1000)
                     ->waitForLocation('/pakar/dashboard')
-                    // Tambahkan assertion di bawah ini:
                     ->assertPathIs('/pakar/dashboard')
-                    ->assertSee('Dashboard'); // Ganti 'Dashboard' dengan teks yang ada di menu/halaman pakar
+                    ->assertSee('Dashboard');
         });
     }
 
@@ -39,10 +38,8 @@ class PanelVerifikasiTest extends DuskTestCase
 
     public function testValidasiMassal()
     {
-        // Menambahkan ini akan menonaktifkan semua middleware (termasuk CSRF) selama tes ini
         $this->withoutMiddleware();
 
-        // 1. Persiapan Data
         $dataDummy = [
             'user_id'          => 1, 
             'species'          => 'Penyu Hijau',
@@ -59,14 +56,12 @@ class PanelVerifikasiTest extends DuskTestCase
         $laporan1 = \App\Models\Laporan::create($dataDummy);
         $laporan2 = \App\Models\Laporan::create($dataDummy);
 
-        // 2. Aksi
         $this->actingAs(\App\Models\User::find(2))
              ->post('/pakar/validasi/bulk-verify', [
                  'ids' => [$laporan1->id, $laporan2->id],
                  'koreksi' => 'Validasi massal via tes'
              ])->assertStatus(200);
 
-        // 3. Assertion
         $this->assertEquals('Terverifikasi', $laporan1->fresh()->status, 'Laporan 1 gagal terupdate!');
         $this->assertEquals('Terverifikasi', $laporan2->fresh()->status, 'Laporan 2 gagal terupdate!');
         
@@ -84,31 +79,22 @@ class PanelVerifikasiTest extends DuskTestCase
                     ->visit('/pakar/validasi/1')
                     ->waitForText('SIMPAN VALIDASI', 10);
             
-            // 1. Klik tombol dropdown status menggunakan XPath yang lebih aman
-            // Kita cari button yang berada di dalam div status
             $browser->clickAtXPath('//div[@x-data and contains(.,"Status")]//button')
-                    ->pause(500); // Tunggu sebentar agar dropdown muncul
+                    ->pause(500); 
 
-            // 2. Pilih "Terverifikasi"
-            // Kita cari elemen div yang berisi teks "Terverifikasi" dan klik
             $browser->waitForText('Terverifikasi')
                     ->clickAtXPath('//div[contains(text(), "Terverifikasi")]')
                     
-                    // 3. Input Koreksi
                     ->type('koreksi', 'Data biota sesuai dengan panduan konservasi.')
                     
-                    // 4. Checkbox
                     ->script("document.getElementById('pernyataan').checked = true;");
 
-            // 5. Simpan
             $browser->press('SIMPAN VALIDASI')
                     ->waitForLocation('/pakar/validasi');
 
-            // 6. Assert
             $laporan = \App\Models\Laporan::find(1);
             $this->assertEquals('Terverifikasi', $laporan->status, 'Status laporan di database tidak berubah!');
             
-            // Ganti baris 83 dengan ini:
             $browser->assertPathIs('/pakar/validasi'); 
         });
     }
@@ -141,10 +127,9 @@ class PanelVerifikasiTest extends DuskTestCase
     public function test_AlurFeedbackEdukatif()
     {
         $this->browse(function (Browser $browserPakar, Browser $browserMasyarakat) {
-            // --- STEP 1: Pakar memberikan feedback (TC-14-01-01) ---
             \App\Models\Laporan::where('id', 1)->update(['status' => 'Menunggu Verifikasi']);
 
-            $browserPakar->loginAs(\App\Models\User::find(2)) // ID Pakar
+            $browserPakar->loginAs(\App\Models\User::find(2))
                         ->visit('/pakar/validasi/1')
                         ->clickAtXPath('//button[contains(., "Terverifikasi")]')
                         ->waitForText('Terverifikasi')
@@ -166,7 +151,6 @@ class PanelVerifikasiTest extends DuskTestCase
     public function test_MasyarakatMenerimaFeedback()
     {
         $this->browse(function (Browser $browser) {
-            // Kita asumsikan laporan id 1 sudah diupdate oleh test sebelumnya
             
             $browser->visit('/logout')
                     ->loginAs(User::where('role', 'masyarakat')->first())
